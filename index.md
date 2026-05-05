@@ -94,7 +94,7 @@ patternfly: true
             Multi-datacenter Active-Passive disaster recovery for Ansible Automation Platform using EDB Postgres Advanced Server and EDB Failover Manager with sub-5-minute RTO.
           </div>
           <div class="pf-v6-c-card__footer">
-            <span class="pf-v6-c-label pf-m-outline pf-m-compact"><span class="pf-v6-c-label__content">EDB PostgreSQL</span></span>
+            <img src="{{ '/assets/images/edb.png' | relative_url }}" alt="EDB" class="card-partner-logo">
           </div>
         </div>
       </a>
