@@ -74,7 +74,9 @@ This solution guide helps Ansible Automation Platform (AAP) customers automate t
 - **Validated Collection**: [**infra.ai**](https://console.redhat.com/ansible/automation-hub/repo/validated/infra/ai) – Provisions RHEL AI infrastructure.
 - **Certified Collection**: [**redhat.ai**](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/ai) – Configures and serves an AI model on a provisioned RHEL AI host using InstructLab.
 
-> 💡 Note: This solution guide demonstrates automating the deployment and configuration of RHEL AI using Ansible Automation Platform, specifically focusing on AWS as an example infrastructure platform. The `infra.ai` validated collection, however, supports provisioning AI infrastructure on various platforms.
+> **Note:** This guide uses AWS as the example platform.
+>
+> This solution guide demonstrates automating the deployment and configuration of RHEL AI using Ansible Automation Platform, specifically focusing on AWS as an example infrastructure platform. The `infra.ai` validated collection, however, supports provisioning AI infrastructure on various platforms.
 
 <h3 id="components"></h3>
 ### Components
@@ -133,7 +135,9 @@ Pass the obtained AMI ID into your playbook using the variable:
 rhelai_aws_rhelai_ami: ami-xxxxxxxxxxxxxxxxx
 ```
 
->💡 Note: These steps detail provisioning on AWS using the infra.ai AWS content. When targeting other platforms like Azure, Google Cloud, or bare metal, you would utilize the corresponding content provided by the infra.ai collection and configure your inventory accordingly.
+> **Note:** Other platforms use the matching infra.ai modules.
+>
+> These steps detail provisioning on AWS using the infra.ai AWS content. When targeting other platforms like Azure, Google Cloud, or bare metal, you would utilize the corresponding content provided by the infra.ai collection and configure your inventory accordingly.
 
 <h2 id="setting-up-the-inventory"></h2>
 ## Setting up the inventory
@@ -170,7 +174,9 @@ For workflows within Ansible Automation Platform, configure a dynamic inventory 
 
 This dynamic inventory sync ensures your infrastructure is always up to date and aligns well with controller workflows.
 
-> ✅ Tip: Use dynamic inventory sync in AAP to scale automation and keep environments consistent.
+> **Tip:** Sync inventory dynamically in automation controller.
+>
+> Use dynamic inventory sync in AAP to scale automation and keep environments consistent.
 
 
 <h2 id="visualizing-the-workflow-in-ansible-automation-platform"></h2>

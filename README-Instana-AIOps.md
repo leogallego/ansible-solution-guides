@@ -217,7 +217,9 @@ In both paths, Instana's built-in alert channels can simultaneously notify colla
 
 **Together:** Both paths share the same automation content -- build your remediation once, execute through either path based on operational needs.
 
-> **Tip:** Both paths converge on automation controller for execution. The RBAC policies, credential types, audit trail, and approval workflows are identical regardless of which path triggers the job template.
+> **Tip:** Both paths use automation controller for execution.
+>
+> The RBAC policies, credential types, audit trail, and approval workflows are identical regardless of which path triggers the job template.
 
 ---
 
@@ -237,6 +239,8 @@ In both paths, Instana's built-in alert channels can simultaneously notify colla
 
 **Operational Impact:** None
 
+> **Tip:** This credential step is optional for the playbooks in this guide.
+>
 > Only needed if your playbooks call the Instana backend API (e.g., `POST /api/releases` for deployment markers). The remediation playbooks in this guide use the [Host Agent REST API](https://www.ibm.com/docs/en/instana-observability/current?topic=apis-host-agent-rest-api) on `localhost:42699`, which requires no authentication.
 
 Input configuration:
@@ -279,7 +283,9 @@ Navigate to **Settings > Events & Alerts > Alert Channels > Add Alert Channel > 
 | **Webhook URL** | `https://eda.example.com:5000/instana` |
 | **Custom HTTP Headers** | (optional: `X-EDA-Token: <bearer-token>` for auth) |
 
-> **Note:** Instana states "The Instana Webhook format is not compatible with third-party tools expecting Incoming Webhooks in their format." This is expected -- the `ibm.instana.instana_webhook` source plugin handles parsing.
+> **Note:** The Instana webhook payload is Instana-specific.
+>
+> Instana states "The Instana Webhook format is not compatible with third-party tools expecting Incoming Webhooks in their format." This is expected -- the `ibm.instana.instana_webhook` source plugin handles parsing.
 
 Use the **Test Channel** button to verify delivery before proceeding.
 
@@ -576,7 +582,9 @@ Instana detects slow query execution times or connection pool exhaustion on a mo
     status_code: [200, 201, 204]
 ```
 
-> **Tip:** Store database credentials in an automation controller credential type -- never hardcode `db_admin_user` or `db_admin_password` in playbook variables. Use injectors to pass them as extra variables or environment variables at runtime.
+> **Tip:** Store database credentials in controller, not in playbooks.
+>
+> Store database credentials in an automation controller credential type -- never hardcode `db_admin_user` or `db_admin_password` in playbook variables. Use injectors to pass them as extra variables or environment variables at runtime.
 
 ---
 
@@ -586,7 +594,9 @@ Instana detects slow query execution times or connection pool exhaustion on a mo
 
 Instana detects a spike in erroneous call rate correlated with a recent deployment Change event. Probable Root Cause identifies the deployment as the likely cause. Automation controller runs a job template that triggers a Kubernetes rollback.
 
-> **Warning:** This use case has **high** operational impact -- a rollback reverts production code. Use automation controller approval workflow nodes (see [Maturity Path](#maturity-path)) until this pattern is validated in your environment.
+> **Warning:** Rollbacks here affect production Kubernetes workloads.
+>
+> This use case has **high** operational impact -- a rollback reverts production code. Use automation controller approval workflow nodes (see [Maturity Path](#maturity-path)) until this pattern is validated in your environment.
 
 **Remediation playbook -- featured tasks:**
 
@@ -627,7 +637,9 @@ Instana detects a spike in erroneous call rate correlated with a recent deployme
     status_code: [200, 201, 204]
 ```
 
-> **Tip:** For Kubernetes remediation, store the `kubeconfig` in an automation controller credential of type "OpenShift or Kubernetes API Bearer Token" and ensure the execution environment includes the `kubernetes.core` Ansible Certified Content Collection.
+> **Tip:** Put `kubeconfig` in a Kubernetes API credential type.
+>
+> For Kubernetes remediation, store the `kubeconfig` in an automation controller credential of type "OpenShift or Kubernetes API Bearer Token" and ensure the execution environment includes the `kubernetes.core` Ansible Certified Content Collection.
 
 ---
 
@@ -707,9 +719,13 @@ As teams add new job templates to automation controller, the AI automatically co
 | Novel failure mode or alert that could match multiple existing playbooks | AI-assisted routing -- LLM selects the best existing job template from your catalog |
 | Instana Probable Root Cause provides a clear suggestion | Direct remediation using the `suggestion` field to select the matching job template |
 
-> **Tip:** The AI recommendation includes the exact template name, confidence level, reasoning, and suggested variables -- enough detail for an operator to execute immediately or for a workflow to run conditionally based on confidence threshold.
+> **Tip:** AI output includes template, confidence, and variables.
+>
+> The AI recommendation includes the exact template name, confidence level, reasoning, and suggested variables -- enough detail for an operator to execute immediately or for a workflow to run conditionally based on confidence threshold.
 
-> **Tip:** The generic [AIOps automation with Ansible](README-AIOps.md) guide covers the AI inference pattern in depth, including how to use Red Hat AI, OpenAI, or any OpenAI-compatible endpoint.
+> **Tip:** Deeper AI inference examples are in the main AIOps guide.
+>
+> The generic [AIOps automation with Ansible](README-AIOps.md) guide covers the AI inference pattern in depth, including how to use Red Hat AI, OpenAI, or any OpenAI-compatible endpoint.
 
 ---
 
@@ -835,7 +851,9 @@ Start capturing these metrics before enabling automated remediation -- having a 
 | **On-call escalation volume** | Number of Incidents that still require human triage after automation is enabled | PagerDuty/OpsGenie/Instana alert channel delivery counts |
 | **SLA compliance** | Service uptime percentage for mission-critical applications | Instana Smart Alert history; service-level objectives dashboard |
 
-> **Tip:** Identify 3-5 metrics most relevant to your environment and begin capturing baselines during the Crawl stage. Organizations that define success metrics before enabling automation can demonstrate measurable impact within the first quarter.
+> **Tip:** Define a small metric set before you scale automation.
+>
+> Identify 3-5 metrics most relevant to your environment and begin capturing baselines during the Crawl stage. Organizations that define success metrics before enabling automation can demonstrate measurable impact within the first quarter.
 
 ---
 
