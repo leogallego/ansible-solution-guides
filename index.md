@@ -22,6 +22,9 @@ patternfly: true
     <div class="cards-sidebar__section">
       <h4 class="cards-sidebar__title">Status</h4>
       <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="published"> Published
+      </label>
+      <label class="cards-sidebar__checkbox">
         <input type="checkbox" value="wip"> Work in Progress
       </label>
     </div>
@@ -55,7 +58,7 @@ patternfly: true
     <p id="guide-search-count" class="cards-search__count"></p>
 
     <div class="pf-v6-l-gallery pf-m-gutter cards-gallery" id="main-gallery">
-      <a href="{{ '/README-AIOps' | relative_url }}" class="card-link" data-partners="foundational">
+      <a href="{{ '/README-AIOps' | relative_url }}" class="card-link" data-partners="foundational,published">
         <div class="pf-v6-c-card card-foundational">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -77,7 +80,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-EDB' | relative_url }}" class="card-link" data-partners="edb,integration">
+      <a href="{{ '/README-EDB' | relative_url }}" class="card-link" data-partners="edb,integration,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -99,7 +102,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-Instana-AIOps' | relative_url }}" class="card-link" data-partners="instana,integration">
+      <a href="{{ '/README-Instana-AIOps' | relative_url }}" class="card-link" data-partners="instana,integration,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -121,7 +124,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-IA' | relative_url }}" class="card-link" data-partners="redhat-ai,integration">
+      <a href="{{ '/README-IA' | relative_url }}" class="card-link" data-partners="redhat-ai,integration,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -143,7 +146,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-Intelligent-Assistant-RHAIIS' | relative_url }}" class="card-link" data-partners="redhat-ai,integration">
+      <a href="{{ '/README-Intelligent-Assistant-RHAIIS' | relative_url }}" class="card-link" data-partners="redhat-ai,integration,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -165,7 +168,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-AIOps-Splunk-ITSI' | relative_url }}" class="card-link" data-partners="splunk,integration">
+      <a href="{{ '/README-AIOps-Splunk-ITSI' | relative_url }}" class="card-link" data-partners="splunk,integration,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -268,7 +271,7 @@ patternfly: true
       <summary>Legacy Solution Guides (Under Review)</summary>
       <p>These solution guides were published on access.redhat.com before this repository existed. They are being reviewed and will be migrated to the new format as full markdown guides.</p>
       <div class="pf-v6-l-gallery pf-m-gutter cards-gallery">
-        <a href="https://access.redhat.com/articles/7136383" class="card-link" target="_blank" data-partners="">
+        <a href="https://access.redhat.com/articles/7136383" class="card-link" target="_blank" data-partners="published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Automation Dashboard and Analytics</h3>
@@ -278,7 +281,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7127603" class="card-link" target="_blank" data-partners="servicenow">
+        <a href="https://access.redhat.com/articles/7127603" class="card-link" target="_blank" data-partners="servicenow,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">ServiceNow ITSM Ticket Enrichment</h3>
@@ -291,7 +294,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7136720" class="card-link" target="_blank" data-partners="">
+        <a href="https://access.redhat.com/articles/7136720" class="card-link" target="_blank" data-partners="published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Get started with EDA (Ansible Rulebook)</h3>
@@ -301,7 +304,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7123366" class="card-link" target="_blank" data-partners="cisco">
+        <a href="https://access.redhat.com/articles/7123366" class="card-link" target="_blank" data-partners="cisco,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Network Back Up and Configuration</h3>
@@ -314,7 +317,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7123361" class="card-link" target="_blank" data-partners="cisco">
+        <a href="https://access.redhat.com/articles/7123361" class="card-link" target="_blank" data-partners="cisco,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Network Fact Gathering & Reporting</h3>

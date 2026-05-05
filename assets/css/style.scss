@@ -671,6 +671,10 @@ b {
   text-decoration: underline;
 }
 
+.cards-sidebar__section + .cards-sidebar__section {
+  margin-top: 22px;
+}
+
 .cards-sidebar__title {
   font-family: 'Red Hat Display', sans-serif;
   font-weight: 600;
@@ -745,6 +749,10 @@ b {
 
   .cards-sidebar.sidebar--open .cards-sidebar__section {
     display: flex;
+  }
+
+  .cards-sidebar.sidebar--open .cards-sidebar__section + .cards-sidebar__section {
+    margin-top: 18px;
   }
 
   .cards-sidebar__title {
