@@ -165,7 +165,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 **Strengths:**
 - Strong systems narrative: clear contrast between deterministic EDA scaling and AI-in-the-middle architecture
 - Risk-aware layering with operational impact matrix and Crawl/Walk/Run framing
-- Eight YAML examples spanning rulebooks, AI completions, URIs, git publish, and dynamic Controller resources
+- Eight YAML examples spanning rulebooks, AI completions, URIs, git publish, and dynamic AAP resources
 - Comprehensive reference tables for event types, observability tools, message queues, and AI endpoints
 - Boundary-oriented troubleshooting table fills a gap most architecture docs skip
 - New "Where Do Good Playbooks Come From?" section maps four playbook sources (Red Hat Lightspeed CVE, Advisor, RHEL System Roles, Automation code assistant) to maturity stages
@@ -174,7 +174,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 **Weaknesses:**
 - Validation is organized by stage but lacks verbatim sample outputs -- weaker as a standalone cookbook
 - No single explicit "Solution Walkthrough" heading; depth is spread across sections 1-4
-- Controller YAML snippets embed HTML emoji in `name` fields, which breaks copy-paste as valid YAML
+- AAP YAML snippets embed HTML emoji in `name` fields, which breaks copy-paste as valid YAML
 - Missing KB blockquote under the title per repo convention
 
 **Suggestions:**
@@ -203,7 +203,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 **Strengths:**
 - Clear two-collection story (`infra.ai` for provisioning, `redhat.ai` for model serving) with Automation Hub links
-- Multiple integration paths: CLI inventory vs Controller EC2 sync, curl vs Ansible module for validation
+- Multiple integration paths: CLI inventory vs AAP EC2 sync, curl vs Ansible module for validation
 - Honest scope note that AWS is an example while `infra.ai` supports other targets
 - Operational bridge to AAP via workflow template description and screenshot
 
@@ -215,7 +215,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 **Suggestions:**
 1. Add an Overview section with a problem statement and a consolidated Prerequisites table
-2. Show `provision.yml` execution alongside `ilab.yml` (or the Controller job settings equivalent)
+2. Show `provision.yml` execution alongside `ilab.yml` (or the AAP job settings equivalent)
 3. Expand Validation with sample success output and a 3-5 row troubleshooting table
 
 ---
@@ -247,12 +247,12 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 - Zero YAML and no example job template, survey, inventory limit, or `servicenow.itsm` follow-up pattern
 - Architecture relies on one ASCII diagram and bullets -- MCP deployment topology and auth flow are not deep enough
 - "Workflow" section renamed to "End-to-End Architecture" which diverges from the framework
-- Validation is qualitative ("visible in Controller") without sample outputs or API calls
+- Validation is qualitative ("visible in AAP") without sample outputs or API calls
 
 **Suggestions:**
 1. Add 2 YAML excerpts: a minimal job template definition and a `servicenow.itsm` enrichment task
 2. Add one sequence or component diagram clarifying MCP hosting, network path, and trust boundaries
-3. Paste one verbatim success artifact (sanitized Controller job output or connector status text) per checkpoint
+3. Paste one verbatim success artifact (sanitized AAP job output or connector status text) per checkpoint
 
 ---
 
