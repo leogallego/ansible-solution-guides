@@ -84,7 +84,7 @@ The Arcade walkthrough summarizes the story as:
 - **AAP runs the playbook** (governed: RBAC + audit)
 - **ServiceNow LEAP updates** as the remediation proceeds/completes
 
-<img src="{{ '/assets/images/servicenow-architecture.png' | relative_url }}" alt="ServiceNow LEAP and Ansible MCP architecture" width="80%">
+<img src="assets/images/servicenow-architecture.png" alt="ServiceNow LEAP and Ansible MCP architecture" width="80%">
 
 **End-to-end flow (logical):**
 
