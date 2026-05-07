@@ -7,7 +7,7 @@
   }
 </style>
 
-<img src="assets/images/splunk-hero.png" alt="Ansible + Splunk" width="400">
+<img src="assets/images/splunk-hero.png" alt="Ansible + Splunk">
 
 ## Overview
 
