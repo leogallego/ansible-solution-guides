@@ -1,5 +1,7 @@
 # ServiceNow ITSM Ticket Enrichment Automation - Solution Guide <!-- omit in toc -->
 
+<img src="assets/images/servicenow-hero.png" alt="Ansible + ServiceNow" width="400">
+
 - [Overview](#overview)
 - [Background](#background)
 - [Solution](#solution)
