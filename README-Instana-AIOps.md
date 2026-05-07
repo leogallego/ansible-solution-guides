@@ -7,7 +7,7 @@
   }
 </style>
 
-<img src="assets/images/instana-hero.png" alt="Ansible + Instana">
+<img src="assets/images/instana-hero.png" alt="Ansible + Instana" style="max-width:400px">
 
 ## Overview
 
