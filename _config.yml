@@ -4,6 +4,7 @@ exclude:
   - ".devcontainer"
   - ".vscode"
   - "plans"
+  - "accessredhat-index.md"
 kramdown:
   syntax_highlighter_opts:
     disable: true
