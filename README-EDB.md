@@ -7,7 +7,7 @@
   }
 </style>
 
-<img src="assets/images/edb-hero.png" alt="Ansible + EDB PostgreSQL">
+<img src="assets/images/edb-hero.png" alt="Ansible + EDB PostgreSQL" style="max-width:400px">
 
 ## Overview
 
