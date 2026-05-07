@@ -1,7 +1,7 @@
 {% raw %}
 # Unlock AIOps with ServiceNow LEAP and Ansible MCP server - Solution Guide <!-- omit in toc -->
 
-<img src="assets/images/servicenow-hero.png" alt="Ansible + ServiceNow">
+<img src="assets/images/servicenow-hero.png" alt="Ansible + ServiceNow" style="max-width:400px">
 
 <style>
   div#toc {
