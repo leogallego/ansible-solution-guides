@@ -214,12 +214,10 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 - Walkthrough steps are UI-navigation-oriented (click paths) rather than API/CLI-oriented -- harder to reproduce without exact ServiceNow instance configuration
 - Guide title changed from the original "Reducing MTTR" framing; the new title is more accurate but the card description could better highlight the MTTR outcome
 - `servicenow.itsm` follow-up is marked optional -- could be stronger as a recommended pattern
-- Missing KB blockquote format consistency (KB link present but framed differently than other guides)
 
 **Suggestions:**
 1. Add a short API-based alternative for Step 2 (connector setup) so readers without LEAP UI access can validate programmatically
 2. Strengthen the `servicenow.itsm` follow-up from "optional" to "recommended" with a note on when to skip it
-3. Align KB blockquote under the title to match the exact format used in other published guides
 
 ---
 
