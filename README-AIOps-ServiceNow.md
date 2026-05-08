@@ -17,7 +17,7 @@ This guide describes a practical AIOps pattern that bridges those teams using **
 
 **Business value:** Fewer handoffs and faster MTTR when remediation already exists as Ansible content -- operators launch **approved** job templates from the ITSM context they already use. Repeat incidents shrink when LEAP systematically maps opportunities to trusted playbooks; stakeholders get an **audit trail** from ServiceNow through AAP to the hosts that changed.
 
-**Technical value:** A **standard MCP integration surface** instead of one-off REST scripts per team; **RBAC-scoped** execution in AAP whether a human or LEAP starts the job; **credential isolation** (vaulted in AAP, injected at runtime); optional **`servicenow.itsm`** follow-up for correlation IDs in work notes.
+**Technical value:** A **standard MCP integration surface** instead of one-off REST scripts per team; **RBAC-scoped** execution in AAP whether a human or LEAP starts the job; **credential isolation** (vaulted in AAP, injected at runtime); **`servicenow.itsm`** follow-up for correlation IDs in work notes (recommended for audit completeness and multi-agent visibility).
 
 > **Where this fits in AIOps maturity**
 >
@@ -153,7 +153,7 @@ flowchart LR
 | Collection | Type | Purpose |
 |-----------|------|---------|
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Define job templates and AAP objects as code (pairs with [Executable artifacts](#executable-artifacts-yaml-examples)) |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">servicenow.itsm</a> | Certified | Optional: update incidents from an Ansible follow-up job after AAP completes (correlation IDs, work notes) |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">servicenow.itsm</a> | Certified | Recommended: update incidents from an Ansible follow-up job after AAP completes (correlation IDs, work notes, multi-agent visibility) |
 
 <h2 id="solution-walkthrough"></h2>
 
@@ -217,7 +217,7 @@ In LEAP:
 
 ## Executable artifacts (YAML examples)
 
-These excerpts mirror patterns used in higher-scoring guides: **AAP-as-code** for approved catalogs, plus an optional **`servicenow.itsm`** follow-up when you want Ansible (not only LEAP UI) to write correlation data back to the incident.
+These excerpts mirror patterns used in higher-scoring guides: **AAP-as-code** for approved catalogs, plus a recommended **`servicenow.itsm`** follow-up so Ansible writes correlation data back to the incident independently of the LEAP polling cycle.
 
 ### 1. Governed job template (AAP as code)
 
@@ -253,13 +253,17 @@ Use `ansible.controller.job_template` (or `awx.awx.job_template` on community Ga
 
 Tune **`ask_limit_on_launch`** and surveys so operators (and LEAP-driven runs) cannot bypass blast-radius controls.
 
-### 2. Optional ITSM follow-up with servicenow.itsm
+### 2. Recommended: ITSM follow-up with servicenow.itsm
 
-After AAP finishes, a small **follow-up playbook** can append **work notes** with the **AAP job ID** and status for auditors linking ITSM and AAP.
+> **Why recommended, not optional?**
+>
+> LEAP polls the MCP server to check job status, but that polling window is bounded by the LEAP session. A `servicenow.itsm` follow-up from AAP writes deterministic status back to the incident the moment the job finishes -- regardless of whether the LEAP session is still active, whether the job ran asynchronously, or whether a human even triggered it. This makes AAP the authoritative record of what happened and when.
+
+**The bigger picture: multi-agent visibility.** In production environments, LEAP is not the only client that may drive automation through AAP. AI coding agents (Cursor, Claude Code, Windsurf), ChatOps bots, scheduled workflows, and other MCP-capable clients can all launch job templates through the same AAP MCP server. When AAP writes the correlation data back to ServiceNow via `servicenow.itsm`, every agent and operator sharing that incident gets visibility into what ran -- even if they did not originate the job. LEAP can then act on that new information (updated work notes, state changes) in subsequent interactions, creating a feedback loop that works across any combination of human and AI-driven automation.
 
 ```yaml
 ---
-- name: Optional - correlate AAP job to ServiceNow incident
+- name: Correlate AAP job to ServiceNow incident
   hosts: localhost
   gather_facts: false
   vars:
@@ -283,6 +287,10 @@ After AAP finishes, a small **follow-up playbook** can append **work notes** wit
 ```
 
 Use a **dedicated** ServiceNow integration user with least privilege (often **read/update incident work notes** only).
+
+> **When to skip this step.**
+>
+> If your environment is strictly LEAP-only (no other AI agents, no async jobs, no out-of-band automation) and LEAP's built-in polling gives you sufficient visibility, you can defer this step. Add it when you expand to multiple automation clients or need an audit-grade correlation trail.
 
 <h2 id="validation"></h2>
 
@@ -355,7 +363,7 @@ curl -sS -u "integration_user:<PASSWORD>" \
   "https://yourcompany.service-now.com/api/now/table/incident?sysparm_query=number=INC0010001&sysparm_fields=number,state,work_notes"
 ```
 
-Confirm **`work_notes`** contains your correlation block after the optional `servicenow.itsm` task runs.
+Confirm **`work_notes`** contains your correlation block after the `servicenow.itsm` follow-up task runs.
 
 ### Troubleshooting
 
@@ -401,7 +409,7 @@ Quantify adoption the same way top guides anchor business outcomes to observable
 | **Repeat incident rate** | Fewer reopen tickets for the same root cause | Problem/incident correlation IDs in ServiceNow over 30/90 days |
 | **Automation reuse** | Same certified job template used across many incidents | AAP job runs per template ID; LEAP opportunity linkage |
 | **Governance coverage** | No unauthorized templates executed via integration | AAP RBAC audits; token scoped user cannot launch non-approved templates |
-| **Audit completeness** | Every remediation ties ITSM ↔ job ID ↔ host change | Work notes or CMDB update optional task; AAP job `id` in notes |
+| **Audit completeness** | Every remediation ties ITSM ↔ job ID ↔ host change | Work notes from `servicenow.itsm` follow-up; AAP job `id` in notes |
 
 <h2 id="related-guides"></h2>
 
