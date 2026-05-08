@@ -159,9 +159,9 @@ flowchart LR
 
 ## Solution Walkthrough
 
-> **Note:** UI labels mirror the Arcade guidance.
+> **Note:** UI labels may vary.
 >
-> Adapt naming to your organization’s ServiceNow profiles, workspaces, and connector menus.
+> The screenshots and step names below match a reference ServiceNow instance. Adapt naming to your organization's profiles, workspaces, and connector menus.
 
 ### 1. Create an AAP API token for the MCP integration
 
