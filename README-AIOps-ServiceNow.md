@@ -108,10 +108,6 @@ ServiceNow Incident / Service Operations context
         → Outcomes and status feed back into the ServiceNow / LEAP experience
 ```
 
-### Architecture diagram (reference)
-
-Use this **single-page reference image** in architecture reviews and customer decks; the ASCII blocks later in this section are for **runbook-style** copy-paste (Splunk/Instana guides follow the same pattern: diagram plus text diagrams).
-
 <details>
 <summary>Optional: same topology as a Mermaid diagram (GitHub renders this)</summary>
 
