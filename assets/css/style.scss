@@ -1074,6 +1074,22 @@ b {
   }
 }
 
+.edit-link {
+  font-size: 13px;
+  color: #6a6e73;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #0066cc;
+    text-decoration: underline;
+  }
+
+  i {
+    margin-right: 2px;
+  }
+}
+
 @media screen and (max-width: 600px) {
   .cards-hero h1 {
     font-size: 28px;
