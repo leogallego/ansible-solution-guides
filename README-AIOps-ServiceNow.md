@@ -422,9 +422,8 @@ Quantify adoption the same way top guides anchor business outcomes to observable
 ## Related Guides
 
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **AIOps reference architecture:** [AIOps automation with Ansible](README-AIOps.md)
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **Splunk-triggered remediation:** [Triggering Automated Remediation from Splunk Alerts](README-AIOps-Splunk.md)
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **EDA (alternate trigger pattern):** [Get started with EDA (Ansible Rulebook)](https://access.redhat.com/articles/7136720)
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Legacy ServiceNow enrichment KB:** [ServiceNow ITSM Ticket Enrichment Automation](https://access.redhat.com/articles/7127603)
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **ServiceNow enrichment:** [ServiceNow ITSM Ticket Enrichment Automation](README-ServiceNow-ITSM.md)
 
 ---
 
