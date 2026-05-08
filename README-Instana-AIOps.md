@@ -865,21 +865,40 @@ Start capturing these metrics before enabling automated remediation -- having a 
 
 ## Sources
 
-- [AIOps and Ansible Automation Platform: Where AI intelligence meets trusted execution](https://www.redhat.com/en/blog/aiops-and-ansible-automation-platform-where-ai-intelligence-meets-trusted-execution)
-- [Red Hat -- Event-Driven Ansible](https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible)
-- [Red Hat Automation Hub -- ibm.instana](https://console.redhat.com/ansible/automation-hub/collections/published/ibm/instana/details)
-- [IBM Instana Observability](https://www.ibm.com/products/instana)
-- [IBM Docs -- Webhook Alert Channel](https://www.ibm.com/docs/en/instana-observability/current?topic=alerting-webhooks)
-- [IBM Docs -- Smart Alerts](https://www.ibm.com/docs/en/instana-observability/current?topic=applications-smart-alerts)
-- [IBM Docs -- Adaptive Thresholds](https://www.ibm.com/docs/en/instana-observability/1.0.313?topic=instana-adaptive-thresholds-in-smart-alerts)
-- [IBM Docs -- Event Types](https://www.ibm.com/docs/en/instana-observability/current?topic=references-event-types)
-- [IBM Docs -- Host Agent REST API](https://www.ibm.com/docs/en/instana-observability/current?topic=apis-host-agent-rest-api)
-- [IBM Docs -- Automation Action Ansible Sensor](https://www.ibm.com/docs/en/instana-observability/current?topic=technologies-automation-action-ansible)
-- [IBM Docs -- Managing Actions](https://www.ibm.com/docs/en/instana-observability/1.0.312?topic=instana-managing-actions)
-- [IBM -- Probable Root Cause with Causal AI](https://www.ibm.com/blog/probable-root-cause-accelerating-incident-remediation-with-causal-ai/)
-- [IBM -- Intelligent Remediation](https://www.ibm.com/new/announcements/achieving-operational-efficiency-through-instanas-intelligent-remediation)
-- [IBM -- Intelligent Incident Investigation](https://www.ibm.com/new/announcements/use-agentic-ai-to-resolve-incidents-faster-with-ibm-instana-intelligent-incident-investigation)
-- [GitHub -- ibm.instana EDA Collection](https://github.com/instana/ibm-instana-ansible)
-- [GitHub -- Intelligent Remediation Playbooks](https://github.com/instana/intelligent-remediation-ansible)
-- [GitHub -- Instana Ansible Callback Plugin](https://github.com/instana/instana-ansible)
+### Red Hat Ansible Automation Platform
+
+| Resource | What you get |
+|----------|-------------|
+| <a target="_blank" href="https://www.redhat.com/en/blog/aiops-and-ansible-automation-platform-where-ai-intelligence-meets-trusted-execution">AIOps and Ansible Automation Platform</a> | Blog post framing why governed execution matters when AI drives detection |
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible">Event-Driven Ansible</a> | Product overview for the real-time event processing layer used in Path A |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/collections/published/ibm/instana/details">ibm.instana on Automation Hub</a> | Collection details, version history, and install instructions for the EDA source plugin |
+
+### IBM Instana documentation
+
+| Resource | What you get |
+|----------|-------------|
+| <a target="_blank" href="https://www.ibm.com/products/instana">IBM Instana Observability</a> | Product landing page with pricing, trial, and feature overview |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/current?topic=alerting-webhooks">Webhook Alert Channel</a> | How to configure the webhook that sends events to Event-Driven Ansible (Path A) |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/current?topic=applications-smart-alerts">Smart Alerts</a> | Configure application-level alerts that trigger based on KPI thresholds |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/1.0.313?topic=instana-adaptive-thresholds-in-smart-alerts">Adaptive Thresholds</a> | ML-driven baselines that reduce false positives in Smart Alert rules |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/current?topic=references-event-types">Event Types</a> | Reference for incident, issue, and change event classifications in Instana |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/current?topic=apis-host-agent-rest-api">Host Agent REST API</a> | Localhost API on port 42699 used by remediation playbooks for annotation and health checks |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/current?topic=technologies-automation-action-ansible">Automation Action Ansible Sensor</a> | How Instana natively invokes Ansible playbooks without EDA (Path B) |
+| <a target="_blank" href="https://www.ibm.com/docs/en/instana-observability/1.0.312?topic=instana-managing-actions">Managing Actions</a> | Create and manage automation actions within the Instana UI |
+
+### IBM AI and remediation capabilities
+
+| Resource | What you get |
+|----------|-------------|
+| <a target="_blank" href="https://www.ibm.com/blog/probable-root-cause-accelerating-incident-remediation-with-causal-ai/">Probable Root Cause with Causal AI</a> | How Instana uses causal AI to surface probable root cause during incidents |
+| <a target="_blank" href="https://www.ibm.com/new/announcements/achieving-operational-efficiency-through-instanas-intelligent-remediation">Intelligent Remediation</a> | Announcement of Instana's built-in remediation framework and how it pairs with Ansible |
+| <a target="_blank" href="https://www.ibm.com/new/announcements/use-agentic-ai-to-resolve-incidents-faster-with-ibm-instana-intelligent-incident-investigation">Intelligent Incident Investigation</a> | Agentic AI capabilities for faster incident triage inside Instana |
+
+### Open source and community
+
+| Resource | What you get |
+|----------|-------------|
+| <a target="_blank" href="https://github.com/instana/ibm-instana-ansible">ibm.instana EDA Collection (GitHub)</a> | Source code for the `instana_webhook` EDA source plugin and related roles |
+| <a target="_blank" href="https://github.com/instana/intelligent-remediation-ansible">Intelligent Remediation Playbooks</a> | Reference playbooks for common Instana-triggered remediations |
+| <a target="_blank" href="https://github.com/instana/instana-ansible">Instana Ansible Callback Plugin</a> | Callback plugin that reports Ansible runs back to Instana for bidirectional observability |
 {% endraw %}
