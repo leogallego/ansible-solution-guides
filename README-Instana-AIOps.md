@@ -901,4 +901,18 @@ Start capturing these metrics before enabling automated remediation -- having a 
 | <a target="_blank" href="https://github.com/instana/ibm-instana-ansible">ibm.instana EDA Collection (GitHub)</a> | Source code for the `instana_webhook` EDA source plugin and related roles |
 | <a target="_blank" href="https://github.com/instana/intelligent-remediation-ansible">Intelligent Remediation Playbooks</a> | Reference playbooks for common Instana-triggered remediations |
 | <a target="_blank" href="https://github.com/instana/instana-ansible">Instana Ansible Callback Plugin</a> | Callback plugin that reports Ansible runs back to Instana for bidirectional observability |
+
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale AIOps automation tailored to your environment |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
+
+---
+
+<img width="400" src="https://raw.githubusercontent.com/rhpds/showroom-lb2961-ai-driven-ansible-automation/refs/heads/main/solution_images/aap_logo.png">
 {% endraw %}

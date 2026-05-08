@@ -1497,6 +1497,16 @@ This architecture ensures automation availability for workflows that cannot tole
 
 ---
 
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale your automation infrastructure |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
+
+---
+
 **Document Version:** 1.0  
 **Last Review:** 2026-04-20  
 **Based On:** AAP Containerized Multi-Datacenter DR Architecture v2.0 (2026-03-31)
