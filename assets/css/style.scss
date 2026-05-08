@@ -181,12 +181,14 @@ thead th {
   vertical-align: middle;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f4f5f7;
+table tbody tr:nth-child(even),
+table tbody tr:nth-child(even) td {
+  background-color: #f0f1f3 !important;
 }
 
-tbody tr:nth-child(odd) {
-  background-color: #ffffff;
+table tbody tr:nth-child(odd),
+table tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
 }
 
 td, th {
