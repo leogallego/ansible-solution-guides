@@ -263,6 +263,28 @@ patternfly: true
           </div>
         </a>
 
+        <a href="{{ '/README-Patching-RHEL' | relative_url }}" class="card-link" data-partners="redhat-ai,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">RHEL Patching with Red Hat Lightspeed and Ansible MCP Server</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Collapse CVE patching from days to minutes: Red Hat Lightspeed MCP identifies vulnerable RHEL VMs on OpenShift Virtualization, the AAP MCP server surfaces approved remediation, and governed execution patches the fleet with full audit trail.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <img src="{{ '/assets/images/redhat-ai-logo.png' | relative_url }}" alt="Red Hat AI" class="card-partner-logo">
+            </div>
+          </div>
+        </a>
+
       </div>
     </div>
 
