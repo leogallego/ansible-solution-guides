@@ -104,8 +104,17 @@ This solution connects two MCP servers to an AI assistant (such as an IDE with M
 
 ## Patching Workflow
 
-```
-CVE Reported → Lightspeed MCP (identify affected hosts + advisory) → AAP MCP (select playbook) → AAP (execute patch) → Validate
+```mermaid
+graph LR
+  subgraph Identify
+    A([CVE Reported]) --> B[Lightspeed MCP]
+    B --> C[Affected Hosts + Advisory]
+  end
+  subgraph Remediate
+    C --> D[AAP MCP]
+    D --> E[Execute Patch]
+  end
+  E --> F([Validated])
 ```
 
 The workflow follows a Day 2 operations pattern:

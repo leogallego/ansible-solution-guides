@@ -88,9 +88,22 @@ When writing a review:
 
 Reviews are stored in `opus-review.md` with a scorecard table at the top.
 
+## Mermaid Diagrams
+
+Workflow and architecture diagrams must use fenced `mermaid` code blocks, not ASCII art. The site layout loads Mermaid v11 via CDN and renders them automatically. GitHub also renders mermaid natively in markdown previews.
+
+```markdown
+```mermaid
+graph LR
+  A([Event]) --> B[Process] --> C([Result])
+`` `
+```
+
+Use `graph LR` for workflows (left-to-right) and `graph TD` for architecture (top-down). Keep diagrams to 3-8 nodes. See `.cursor/skills/mermaid-diagrams/SKILL.md` for full conventions and examples.
+
 ## Jekyll and GitHub Pages
 
-- Layout: `_layouts/default.html` (includes nav header, footer, Prism.js syntax highlighting, copy-to-clipboard on code blocks, and the Konami code Easter egg).
+- Layout: `_layouts/default.html` (includes nav header, footer, Prism.js syntax highlighting, Mermaid.js diagram rendering, copy-to-clipboard on code blocks, and the Konami code Easter egg).
 - Styles: `assets/css/style.scss` (extends the `jekyll-theme-dinky` base theme with Red Hat branding).
 - Config: `_config.yml` controls excludes and theme settings.
 - Files excluded in `_config.yml` are not rendered on GitHub Pages. If a markdown file should be publicly accessible, ensure it is not in the exclude list.
