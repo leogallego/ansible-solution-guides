@@ -1,7 +1,5 @@
 # Ansible Development Tools - Solution Guide
 
-![Ansible Development Tools](https://ansible.readthedocs.io/projects/dev-tools/_static/ansible-dev-tools.svg)
-
 ## Overview
 
 Setting up a consistent Ansible development environment across a team is harder than it sounds. Developers spend hours installing and configuring individual tools, only to find that versions conflict, linting rules differ, or molecule tests pass on one workstation but fail on another. These inconsistencies slow down onboarding, introduce subtle bugs, and make it difficult to enforce quality standards across automation content.
