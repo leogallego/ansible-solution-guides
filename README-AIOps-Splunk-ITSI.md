@@ -7,6 +7,8 @@
   }
 </style>
 
+<img src="assets/images/splunk-hero.png" alt="Ansible + Splunk" style="max-width:400px">
+
 ## Overview
 
 Operations teams spend their days reacting -- triaging alerts, investigating dashboards, and manually remediating issues that have already impacted users. When a critical service degrades at 3 AM, the response starts with a page, continues with an investigation, and ends with a fix applied long after customers have noticed. This reactive model cannot scale as infrastructure complexity grows and the cost of downtime increases.
@@ -93,15 +95,15 @@ What makes up the solution?
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **Splunk Enterprise or Splunk Cloud** for centralized log ingestion, alerting, and correlation <a target="_blank" href="https://www.splunk.com/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **Splunk ITSI** for service-centric monitoring, KPI tracking, business service health scoring, and episode management (Use Case A) <a target="_blank" href="https://www.splunk.com/en_us/products/it-service-intelligence.html">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Splunk Machine Learning Toolkit (MLTK)** for Kalman Filter forecasting, outlier detection, and predictive anomaly correlation (Use Case A) <a target="_blank" href="https://splunkbase.splunk.com/app/2890">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f517.png" width="20" style="vertical-align:text-bottom;"> **Red Hat Event-Driven Ansible Add-on for Splunk** to bridge ITSI episodes to the EDA Controller via webhook (Use Case A) <a target="_blank" href="https://splunkbase.splunk.com/app/7868">[Link]</a>
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f517.png" width="20" style="vertical-align:text-bottom;"> **Red Hat Event-Driven Ansible Add-on for Splunk** to bridge ITSI episodes to Event-Driven Ansible via webhook (Use Case A) <a target="_blank" href="https://splunkbase.splunk.com/app/7868">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **Event-Driven Ansible (EDA)** to receive Splunk alerts and ITSI episode events, triggering automation based on rulebook conditions <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Red Hat AI** for AI-driven root cause analysis of alert context (Use Cases B, C) <a target="_blank" href="https://www.redhat.com/en/products/ai">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png" width="20" style="vertical-align:text-bottom;"> **Ansible Automation Platform (AAP)** for orchestrating enrichment and remediation workflows <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible">[Link]</a>
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png" width="20" style="vertical-align:text-bottom;"> **Ansible Automation Platform (AAP)** for orchestrating enrichment and remediation workflows <a target="_blank" href="https://www.redhat.com/en/blog/aiops-and-ansible-automation-platform-where-ai-intelligence-meets-trusted-execution">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2728.png" width="20" style="vertical-align:text-bottom;"> **Ansible Lightspeed** to generate remediation playbooks from AI-enriched context (Use Case C) <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/ansible-lightspeed">[Link]</a>
 
 > **EDA is part of Ansible Automation Platform.**
 >
-> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. Think of it simply as inputs and outputs. EDA is an automatic way for inputs into Ansible Automation Platform, where Automation controller is the output (running a job template or workflow).
+> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. Think of it simply as inputs and outputs. EDA is an automatic way for inputs into Ansible Automation Platform, where Ansible Automation Platform is the output (running a job template or workflow).
 
 ### Who Benefits
 
@@ -127,7 +129,7 @@ What makes up the solution?
 
 ### Ansible Automation Platform
 
-- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible (EDA Controller) support with external event streams and webhook sources.
+- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible support with external event streams and webhook sources.
 
 ### Featured Ansible Content Collections
 
@@ -137,7 +139,7 @@ What makes up the solution?
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/namespaces/splunk/">splunk.itsi</a> | Certified | ITSI episode management -- query episodes, add comments, update status, and close incidents programmatically (Use Case A) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/namespaces/splunk/">splunk.es</a> | Certified | Manage Splunk Enterprise Security resources -- correlation searches, adaptive response actions, and data inputs |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/redhat/ai">redhat.ai</a> | Certified | AI model inference using the OpenAI-compatible API via InstructLab (Use Cases B, C) |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Automation Controller configuration as code -- job templates, workflows, surveys |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | AAP configuration as code -- job templates, workflows, surveys |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/scm/">ansible.scm</a> | Certified | Git operations -- commit and push generated playbooks (Use Case C) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/cisco/ios/">cisco.ios</a> | Certified | Cisco IOS device management -- required for the network AIOps use case (Use Case C) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">servicenow.itsm</a> | Certified | ServiceNow ITSM incident creation and enrichment |
@@ -291,7 +293,7 @@ Restart Splunk after adding this stanza.
 
 ### A3. Event-Driven Ansible Integration
 
-**Operational Impact:** None -- the EDA Controller receives the webhook and evaluates rulebook conditions.
+**Operational Impact:** None -- Event-Driven Ansible receives the webhook and evaluates rulebook conditions.
 
 **EDA Rulebook**:
 
@@ -458,7 +460,7 @@ If the database service runs in AWS and the bottleneck is a VPC network limit, t
 
 Use Cases B and C below use **Splunk webhook alerts** (rather than the ITSI Red Hat EDA Add-on) to trigger Event-Driven Ansible. The workflow has four stages, matching the [AIOps reference architecture](README-AIOps.md):
 
-1. **Splunk Alert -> EDA** -- A saved search or alert fires and sends a webhook payload to EDA Controller
+1. **Splunk Alert -> EDA** -- A saved search or alert fires and sends a webhook payload to Event-Driven Ansible
 2. **Enrichment Workflow** -- AAP gathers additional context, sends it to Red Hat AI for root cause analysis, and notifies the operations team
 3. **Remediation Workflow** -- Ansible Lightspeed generates a remediation playbook, commits it to Git, and creates a Job Template
 4. **Execute Remediation** -- The generated playbook runs against the affected infrastructure
@@ -492,7 +494,7 @@ This use case demonstrates the Splunk-to-EDA pipeline for detecting and remediat
 
 **Operational Impact:** None
 
-Splunk alerts can trigger a **webhook action** that sends an HTTP POST to any endpoint -- including the EDA Controller webhook receiver. In Splunk, navigate to **Settings -> Searches, reports, and alerts** and edit (or create) a saved search. Under **Trigger Actions**, add a webhook action pointing to your EDA Controller:
+Splunk alerts can trigger a **webhook action** that sends an HTTP POST to any endpoint -- including the Event-Driven Ansible webhook receiver. In Splunk, navigate to **Settings -> Searches, reports, and alerts** and edit (or create) a saved search. Under **Trigger Actions**, add a webhook action pointing to your EDA endpoint:
 
 | Field | Value |
 |-------|-------|
@@ -704,7 +706,7 @@ Cisco IOS devices send syslog messages when OSPF neighbor adjacencies change sta
 | **Title** | `ospf-neighbor` |
 | **Alert type** | Real-time |
 | **Actions** | Add to Triggered Alerts, Webhook |
-| **Webhook URL** | EDA Controller webhook endpoint |
+| **Webhook URL** | Event-Driven Ansible webhook endpoint |
 
 ### C2. EDA Rulebook for OSPF Events
 
@@ -951,14 +953,14 @@ Each scenario demonstrates a progressively more complex OSPF failure, requiring 
 |-------|---------------|-------------------|
 | **1. MLTK Detection** | Correlation search fires when KPI anomaly occurs | `itsi_tracked_alerts` contains a Critical notable event with "MLTK Alert" title |
 | **2. Episode Creation** | Aggregation policy groups the notable event into an episode | Episode Review shows a new Critical episode |
-| **3. EDA Trigger** | Webhook reaches EDA and rulebook matches | EDA Controller shows rulebook activation with a matched event |
+| **3. EDA Trigger** | Webhook reaches EDA and rulebook matches | AAP shows rulebook activation with a matched event |
 | **4. Remediation** | Playbook executes and closes the loop | Episode shows comment and status Closed; service returns to green |
 
 ### Use Cases B and C (Webhook Alerts)
 
 | Stage | What to Verify | Success Indicator |
 |-------|---------------|-------------------|
-| **1. Splunk Alert -> EDA** | Webhook fires and EDA receives the event | EDA Controller shows the rulebook activation as **Running** |
+| **1. Splunk Alert -> EDA** | Webhook fires and EDA receives the event | AAP shows the rulebook activation as **Running** |
 | **2. Enrichment Workflow** | AI analyzed the alert and notifications were sent | Workflow Visualizer shows all nodes green; Slack/ITSM received the AI diagnosis |
 | **3. Remediation Workflow** | Playbook was generated and committed (network) or service was restarted (RHEL) | New playbook file exists in the Git repository |
 | **4. Execute Remediation** | The fix was applied | Service returns to steady state; OSPF neighbor shows FULL adjacency |
@@ -1032,7 +1034,7 @@ curl -H "Content-Type: application/json" \
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **AIOps reference architecture:** See [AIOps automation with Ansible](README-AIOps.md) for the full end-to-end pipeline, including AI inference, Lightspeed playbook generation, and the broader AIOps maturity journey.
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Need to deploy the AI backend?** See [AI Infrastructure automation with Ansible](README-IA.md) for automating Red Hat AI provisioning with the `infra.ai` and `redhat.ai` collections.
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **New to Event-Driven Ansible?** See [Get started with EDA (Ansible Rulebook)](https://access.redhat.com/articles/7136720) for the fundamentals of rulebooks, event sources, and actions.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Looking for ServiceNow integration?** See [Reducing MTTR with Automated ServiceNow Ticket Enrichment](README-AIOps-ServiceNow.md) for ticket enrichment and ITSM-driven remediation.
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Looking for ServiceNow integration?** See [Unlock AIOps with ServiceNow LEAP and Ansible MCP server](README-AIOps-ServiceNow.md) for LEAP/MCP-driven remediation and related ITSM patterns (see also [KB 7127603](https://access.redhat.com/articles/7127603)).
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3a5.png" width="20" style="vertical-align:text-bottom;"> **Want to try this hands-on?** The [Hands-On AIOps Workshop -- Part 2](https://rhpds.github.io/ai-driven-automation-showroom/modules/index.html) walks through Splunk integration with Cisco router remediation in a live lab.
 
 ---
@@ -1046,6 +1048,16 @@ This guide demonstrates three ways to connect Splunk to Event-Driven Ansible for
 - **Use Case C** detects Cisco **OSPF neighbor failures** via Splunk, enriches the incident with AI-driven diagnostics, and uses Ansible Lightspeed to **generate remediation playbooks** with check-mode validation and human approval gates.
 
 The same pipeline applies across all three: Splunk detects, EDA triggers, AI enriches, and Ansible remediates -- reducing MTTR from hours of manual investigation to minutes of automated resolution. Whether the alert is a predicted network throughput anomaly, a failed httpd service, or an OSPF adjacency down, the pattern is the same. Only the detection logic, diagnostics collection, and remediation tasks change.
+
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale AIOps automation tailored to your environment |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
 
 ---
 

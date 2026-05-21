@@ -1,5 +1,7 @@
 {% raw %}
-# Reducing MTTR with Automated ServiceNow Ticket Enrichment - Solution Guide <!-- omit in toc -->
+# Unlock AIOps with ServiceNow LEAP and Ansible MCP server - Solution Guide <!-- omit in toc -->
+
+<img src="assets/images/servicenow-hero.png" alt="Ansible + ServiceNow" style="max-width:400px">
 
 <style>
   div#toc {
@@ -9,36 +11,44 @@
 
 ## Overview
 
-When a ServiceNow incident is created -- whether by a monitoring tool, a user report, or an automated process -- it typically contains a title and a short description. The Tier 1 engineer assigned to it must then spend time gathering context: checking logs, verifying system health, identifying recent changes, and determining root cause. This manual triage process is **the largest contributor to mean time to resolution (MTTR)** in most enterprises.
+Service management and automation teams often solve the same operational problems from two different “systems of work”: **ServiceNow** captures incidents and workflows, while **Ansible Automation Platform (AAP)** executes the remediation automation. The friction shows up as slow handoffs, duplicate investigations, and inconsistent execution -- all of which inflate **MTTR** and toil.
 
-Organizations handling hundreds or thousands of ServiceNow incidents per month cannot scale this human investigation process. The result is longer resolution times, escalation bottlenecks, and inconsistent diagnostic quality across shifts and teams.
+This guide describes a practical AIOps pattern that bridges those teams using **ServiceNow Learning-Enhanced Automation Platform (LEAP)** and the **Ansible Automation Platform MCP server**. In the flow, LEAP helps identify and prioritize automation opportunities tied to real operational pain, connects to AAP through MCP, **surfaces the right Ansible playbook**, and **runs it with enterprise governance** (RBAC, auditability, and repeatable outcomes).
 
-This guide demonstrates how to **automatically enrich ServiceNow incidents** using Ansible Automation Platform and AI inference. When an incident is created, Ansible gathers diagnostic context from the affected systems, sends it to Red Hat AI for root cause analysis, and writes the enriched diagnosis directly back into the ServiceNow ticket -- before a human engineer even opens it.
+**Business value:** Fewer handoffs and faster MTTR when remediation already exists as Ansible content -- operators launch **approved** job templates from the ITSM context they already use. Repeat incidents shrink when LEAP systematically maps opportunities to trusted playbooks; stakeholders get an **audit trail** from ServiceNow through AAP to the hosts that changed.
 
-> **This is the Crawl stage of AIOps.**
+**Technical value:** A **standard MCP integration surface** instead of one-off REST scripts per team; **RBAC-scoped** execution in AAP whether a human or LEAP starts the job; **credential isolation** (vaulted in AAP, injected at runtime); **`servicenow.itsm`** follow-up for correlation IDs in work notes (recommended for audit completeness and multi-agent visibility).
+
+> **Where this fits in AIOps maturity**
 >
-> Ticket enrichment is the lowest-risk, highest-value entry point for AIOps adoption. No production systems are modified -- AI adds context to tickets, and humans still decide what to do. For the full self-healing pipeline (Crawl → Walk → Run), see [AIOps automation with Ansible](README-AIOps.md).
+> This pattern is closest to **Walk/Run** depending on how you gate execution: LEAP can recommend and launch governed automation from an ITSM context, rather than stopping at ticket commentary alone. For a broader Crawl → Walk → Run framing, see [AIOps automation with Ansible](README-AIOps.md).
+
+**Interactive walkthrough (source narrative for this guide):** [Unlock AIOps with ServiceNow LEAP and Ansible MCP server](https://app.arcade.software/share/UAt0jBV2NHwrV3rgaTQr?ref=share-link)
 
 - [Overview](#overview)
 - [Background](#background)
 - [Solution](#solution)
   - [Who Benefits](#who-benefits)
+- [Workflow](#workflow)
+  - [Architecture diagram (reference)](#architecture-diagram-reference)
+  - [Operational impact by stage](#operational-impact-by-stage)
+  - [MCP deployment topology and trust boundaries](#mcp-deployment-topology-and-trust-boundaries)
 - [Prerequisites](#prerequisites)
   - [Ansible Automation Platform](#ansible-automation-platform)
+  - [ServiceNow](#servicenow)
   - [Featured Ansible Content Collections](#featured-ansible-content-collections)
-  - [External Systems](#external-systems)
-- [ServiceNow Enrichment Workflow](#servicenow-enrichment-workflow)
-  - [Operational Impact per Stage](#operational-impact-per-stage)
-  - [Workflow Diagram](#workflow-diagram)
 - [Solution Walkthrough](#solution-walkthrough)
-  - [1. ServiceNow Outbound Webhook (Business Rule)](#1-servicenow-outbound-webhook-business-rule)
-  - [2. EDA Rulebook for ServiceNow Events](#2-eda-rulebook-for-servicenow-events)
-  - [3. Gather Diagnostic Context from Affected Host](#3-gather-diagnostic-context-from-affected-host)
-  - [4. Analyze with Red Hat AI](#4-analyze-with-red-hat-ai)
-  - [5. Enrich the ServiceNow Ticket](#5-enrich-the-servicenow-ticket)
+  - [1. Create an AAP API token for the MCP integration](#1-create-an-aap-api-token-for-the-mcp-integration)
+  - [2. Connect ServiceNow to the Ansible Automation Platform MCP server](#2-connect-servicenow-to-the-ansible-automation-platform-mcp-server)
+  - [3. Map a LEAP opportunity to an AAP remediation playbook](#3-map-a-leap-opportunity-to-an-aap-remediation-playbook)
+  - [4. Remediate an incident via LEAP (“Execute Ansible playbooks”)](#4-remediate-an-incident-via-leap-execute-ansible-playbooks)
+- [Executable artifacts (YAML examples)](#executable-artifacts-yaml-examples)
 - [Validation](#validation)
+  - [Sample verification artifacts](#sample-verification-artifacts)
   - [Troubleshooting](#troubleshooting)
+- [Security, Governance, and Operational Risk](#security-governance-and-operational-risk)
 - [Maturity Path](#maturity-path)
+- [Measuring success](#measuring-success)
 - [Related Guides](#related-guides)
 - [Summary](#summary)
 
@@ -46,13 +56,13 @@ This guide demonstrates how to **automatically enrich ServiceNow incidents** usi
 
 ## Background
 
-**ServiceNow** is the enterprise standard for IT Service Management (ITSM). It serves as the system of record for incidents, problems, changes, and service requests across most large organizations. When something goes wrong in IT infrastructure, the resolution process almost always flows through ServiceNow -- whether the ticket was created automatically by a monitoring tool or manually by an end user.
+**ServiceNow** remains the enterprise standard for ITSM and service operations workflows. **LEAP** extends that operational context by helping teams identify recurring issues and automation opportunities, then connecting those opportunities to executable remediation.
 
-<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4d6.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.servicenow.com/products/itsm.html">ServiceNow ITSM -- servicenow.com</a>
+**Ansible Automation Platform** is the execution plane for infrastructure and application automation -- with the controls enterprises expect: RBAC, credential management, execution environments, job templates/workflows, and audit trails.
 
-The challenge is not ticket creation -- most organizations have automated that. The challenge is **ticket context**. A newly created incident might say "web server down" but doesn't include which process failed, what the logs show, when the last change was made, or what similar incidents looked like. Engineers spend the first 15-30 minutes of every incident gathering this context manually.
+**MCP (Model Context Protocol) integration** matters here because it gives ServiceNow/LEAP a structured, supported way to call into AAP capabilities (discover and run the right automation) without bespoke glue code for every new playbook.
 
-**Ticket enrichment** closes this gap by automatically attaching diagnostic context to incidents at creation time. AI inference takes it a step further -- instead of just dumping raw logs into a ticket, an AI model analyzes the data and provides a human-readable root cause analysis and recommended next steps.
+<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4d6.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.redhat.com/en/blog/aiops-and-ansible-automation-platform-where-ai-intelligence-meets-trusted-execution">AIOps and Ansible Automation Platform: Where AI intelligence meets trusted execution</a>
 
 <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4d6.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.redhat.com/en/topics/ai/what-is-aiops">What is AIOps? -- redhat.com</a>
 
@@ -62,26 +72,70 @@ The challenge is not ticket creation -- most organizations have automated that. 
 
 What makes up the solution?
 
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **ServiceNow** as the ITSM system of record for incidents <a target="_blank" href="https://www.servicenow.com/">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **Event-Driven Ansible (EDA)** to receive ServiceNow webhook events and trigger automation <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Red Hat AI** for AI-driven root cause analysis of the incident context <a target="_blank" href="https://www.redhat.com/en/products/ai">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png" width="20" style="vertical-align:text-bottom;"> **Ansible Automation Platform (AAP)** workflows for orchestrating the enrichment pipeline <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible">[Link]</a>
-
-> **EDA is part of Ansible Automation Platform.**
->
-> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. Think of it simply as inputs and outputs. EDA is an automatic way for inputs into Ansible Automation Platform, where Automation controller is the output (running a job template or workflow).
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **ServiceNow + LEAP** to prioritize automation opportunities and drive incident remediation from the service operations experience
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f517.png" width="20" style="vertical-align:text-bottom;"> **Ansible Automation Platform MCP server** as the integration surface between LEAP and AAP
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png" width="20" style="vertical-align:text-bottom;"> **Ansible Automation Platform** to execute the matched remediation playbook with enterprise controls
 
 ### Who Benefits
 
 | Persona | Challenge | What They Gain |
 |---------|-----------|---------------|
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6e0.png" width="20" style="vertical-align:text-bottom;"> **IT Ops Engineer / SRE** | Spending 15-30 minutes per incident manually gathering logs, checking system health, and identifying root cause before even starting remediation | Incidents arrive pre-enriched with diagnostic context, AI-generated root cause analysis, and recommended next steps -- engineers start fixing instead of investigating |
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5fa.png" width="20" style="vertical-align:text-bottom;"> **Automation Architect** | Integrating ServiceNow with Ansible requires understanding business rules, webhooks, the REST API, and credential management | A reference architecture with production-ready EDA rulebooks, ServiceNow business rule examples, and tested `servicenow.itsm` collection usage |
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png" width="20" style="vertical-align:text-bottom;"> **IT Manager / Director** | MTTR is high despite staffing investments; escalation rates are growing; diagnostic quality varies by shift | Consistent, AI-driven enrichment on every incident -- measurable MTTR reduction, fewer escalations, and a foundation for further AIOps maturity |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6e0.png" width="20" style="vertical-align:text-bottom;"> **IT Ops / Service Operations** | Swivel-chairing between ITSM and automation tools; inconsistent remediation steps across teams | A guided path from incident → governed Ansible execution, with fewer manual handoffs |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5fa.png" width="20" style="vertical-align:text-bottom;"> **Automation Architect / Platform** | Fragile one-off integrations; hard-to-audit execution; unclear RBAC boundaries | A standard connector model (MCP) and AAP-native audit/RBAC for what actually runs |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png" width="20" style="vertical-align:text-bottom;"> **IT Leader** | High MTTR and repeat incidents; automation exists but isn’t operationalized | Faster resolution, reuse of trusted playbooks, and measurable governance |
 
-**Recommended Demos and Self-Paced Labs:**
+> **Real-world impact: 50% fewer IT incidents.**
+>
+> Spanish insurance leader <a target="_blank" href="https://www.redhat.com/en/about/press-releases/mutua-madrilena-adopts-red-hat-ansible-automation-platform-manage-its-automation-and-observability-strategy">Mutua Madrileña</a> paired Dynatrace observability with Event-Driven Ansible to automate incident resolution across 60+ platforms -- cutting IT incidents by half while expanding self-healing to new departments. The LEAP + MCP pattern in this guide follows the same architecture: intelligent detection feeds governed, deterministic automation.
 
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3a5.png" width="20" style="vertical-align:text-bottom;"> [YouTube: Ansible + ServiceNow Demo (~3 min)](https://www.youtube.com/watch?v=2R5_Mw8D2U0)
+<h2 id="workflow"></h2>
+
+## Workflow
+
+The Arcade walkthrough summarizes the story as:
+
+- **Incident in ServiceNow**
+- **LEAP prioritizes automation opportunities**
+- **LEAP calls MCP server for AAP** and **surfaces an AAP playbook**
+- **AAP runs the playbook** (governed: RBAC + audit)
+- **ServiceNow LEAP updates** as the remediation proceeds/completes
+
+<img src="assets/images/servicenow-architecture.svg" alt="ServiceNow LEAP and Ansible MCP architecture" style="max-width:100%;height:auto;width:80%">
+
+**Logical flow:**
+
+```
+ServiceNow Incident / Service Operations context
+  → LEAP identifies or matches an automation opportunity
+    → LEAP uses the Ansible Automation Platform MCP integration
+      → AAP runs an approved Job Template or Workflow Job Template
+        → Outcomes and status feed back into the ServiceNow / LEAP experience
+```
+
+### Operational impact by stage
+
+| Stage | Operational impact | Why it matters |
+|-------|-------------------|----------------|
+| **LEAP opportunity mapping** | **Low** (metadata and bindings in ITSM) | Associates approved AAP artifacts with recurring operational patterns |
+| **Connector + MCP** | **Low** (integration configuration) | Defines trust path and credentials between ServiceNow and AAP |
+| **Playbook execution** | **Medium to High** (infrastructure / application change) | This is real remediation -- scope, limits, and approvals must match production policy |
+
+### MCP deployment topology and trust boundaries
+
+Place the **Ansible Automation Platform MCP server** where your organization routes all third-party SaaS integrations: typically **behind an HTTPS ingress** (reverse proxy, API gateway, or load balancer) with **TLS termination**, **allow lists**, and optional **mTLS** between proxy and MCP. ServiceNow holds the **integration identity** (API token or OAuth secret); the MCP server never stores broad admin passwords in clear text -- align with your vault and rotation policy.
+
+```mermaid
+flowchart LR
+  SN[ServiceNow LEAP / Connectors]
+  GW[Ingress API GW / WAF]
+  MCP[AAP MCP server]
+  AAP[Ansible Automation Platform]
+  TGT[Managed endpoints]
+
+  SN -->|HTTPS TLS| GW -->|HTTPS| MCP -->|REST OAuth RBAC| AAP -->|SSH WinRM APIs| TGT
+```
+
+**Trust boundaries to document in your runbook:** who can create API tokens, which job templates the integration user may launch, whether **survey** or **limit** is mandatory, and where job output is allowed to be copied back into ServiceNow (work notes vs system fields).
 
 <h2 id="prerequisites"></h2>
 
@@ -89,344 +143,301 @@ What makes up the solution?
 
 ### Ansible Automation Platform
 
-- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible (EDA Controller) support and webhook event sources.
+- **Ansible Automation Platform 2.6+** with the **MCP server for Ansible Automation Platform** (confirm supported versions in your AAP release notes; older supported trains may allow **2.5+**)
+- A **dedicated integration user** or **team-scoped service account** with permission only for the job templates LEAP is allowed to run; prefer **short-lived tokens** and narrowly scoped permissions
+- The **Ansible Automation Platform MCP server endpoint** deployed and reachable from ServiceNow (reverse proxy, mTLS, IP allow lists, health checks)
+
+### ServiceNow
+
+- ServiceNow instance with **LEAP** available (demo navigation: **Workspaces → Learning-Enhanced Automation Platform**)
+- Permissions to configure **Connectors** and run LEAP remediation flows (demo path: settings → **Connectors** → **+ Connect**)
 
 ### Featured Ansible Content Collections
 
 | Collection | Type | Purpose |
 |-----------|------|---------|
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">servicenow.itsm</a> | Certified | Create, update, and query ServiceNow incidents, problems, changes, and CMDB records |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/eda/">ansible.eda</a> | Certified | EDA event sources and filters (webhooks, Kafka, etc.) |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Automation Controller configuration as code (job templates, workflows, surveys) |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/redhat/ai">redhat.ai</a> | Certified | AI model inference using the OpenAI-compatible API via InstructLab |
-
-> **The servicenow.itsm collection is key.**
->
-> This certified collection provides native Ansible modules for ServiceNow -- no raw REST API calls needed. It supports incidents, problems, changes, configuration items, and more. Install it from <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">Automation Hub</a>.
-
-### External Systems
-
-| System | Required | Notes |
-|--------|----------|-------|
-| ServiceNow instance | Yes | Developer instance (free) or enterprise instance; must support Business Rules and REST API |
-| AI inference endpoint | Yes | Red Hat AI (RHEL AI + InstructLab) or any OpenAI-compatible API |
-| Chat platform | Recommended | Slack, Mattermost, or Microsoft Teams for real-time notifications alongside ticket updates |
-
-> **ServiceNow Developer Instances are free.**
->
-> If you don't have a ServiceNow enterprise instance, you can get a free developer instance at <a target="_blank" href="https://developer.servicenow.com/">developer.servicenow.com</a> for testing and development.
-
-<h2 id="servicenow-enrichment-workflow"></h2>
-
-## ServiceNow Enrichment Workflow
-
-The enrichment workflow has five stages:
-
-1. **ServiceNow Incident → EDA** -- A new incident is created in ServiceNow. A Business Rule fires and sends a webhook to EDA Controller.
-2. **Gather Diagnostic Context** -- Ansible connects to the affected host and collects logs, system status, and configuration data.
-3. **AI Analysis** -- The gathered context is sent to Red Hat AI, which provides a root cause analysis and recommended next steps.
-4. **Enrich the Ticket** -- Ansible writes the AI analysis, diagnostic data, and recommendations back into the ServiceNow incident as work notes.
-5. **Notify the Team** -- The enriched incident is flagged in Slack/Mattermost so the assigned engineer knows it's ready for action.
-
-### Operational Impact per Stage
-
-| Stage | Operational Impact | Why |
-|-------|-------------------|-----|
-| **1. ServiceNow → EDA** | **None** | Read-only -- ServiceNow fires a webhook, EDA receives it. No changes to systems. |
-| **2. Gather Context** | **None** | Read-only -- Ansible collects logs and facts from the affected host. No modifications. |
-| **3. AI Analysis** | **None** | Read-only -- data is sent to an AI API and a response is received. No infrastructure changes. |
-| **4. Enrich Ticket** | **Low** | Writes work notes to the ServiceNow incident. No infrastructure changes. |
-| **5. Notify Team** | **Low** | Posts a message to Slack/Mattermost. No infrastructure changes. |
-
-> **This entire workflow is read-only on infrastructure.**
->
-> Unlike the full AIOps self-healing pipeline, ticket enrichment never modifies production systems. The only writes are to ServiceNow (work notes) and chat (notifications). This makes it safe to deploy immediately in any environment.
-
-### Workflow Diagram
-
-```
-ServiceNow Incident → Webhook → EDA Rulebook → Gather Context → AI Analysis → Update Ticket → Notify Team
-```
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Define job templates and AAP objects as code (pairs with [Executable artifacts](#executable-artifacts-yaml-examples)) |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/servicenow/itsm/">servicenow.itsm</a> | Certified | Recommended: update incidents from an Ansible follow-up job after AAP completes (correlation IDs, work notes, multi-agent visibility) |
 
 <h2 id="solution-walkthrough"></h2>
 
 ## Solution Walkthrough
 
-### 1. ServiceNow Outbound Webhook (Business Rule)
-
-**Operational Impact:** None (ServiceNow configuration only)
-
-ServiceNow **Business Rules** execute server-side logic when records are inserted, updated, or deleted. To trigger EDA when a new incident is created, configure an outbound REST message from a Business Rule.
-
-In ServiceNow, navigate to **System Definition → Business Rules** and create a new rule:
-
-| Field | Value |
-|-------|-------|
-| **Name** | `Trigger Ansible EDA on Incident Create` |
-| **Table** | `incident` |
-| **When** | After |
-| **Insert** | true |
-| **Filter Conditions** | Priority = 1 (Critical) OR Priority = 2 (High) |
-
-The Business Rule script sends a webhook to EDA with the incident details:
-
-```javascript
-(function executeRule(current, previous) {
-    var request = new sn_ws.RESTMessageV2();
-    request.setEndpoint('https://eda.example.com:5000/endpoint');
-    request.setHttpMethod('POST');
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.setRequestBody(JSON.stringify({
-        incident_number: current.number.toString(),
-        short_description: current.short_description.toString(),
-        priority: current.priority.toString(),
-        affected_ci: current.cmdb_ci.name.toString(),
-        assigned_to: current.assigned_to.name.toString(),
-        caller: current.caller_id.name.toString()
-    }));
-    var response = request.execute();
-})(current, previous);
-```
-
-> **Filter by priority.**
+> **Note:** UI labels may vary.
 >
-> Don't trigger automation on every incident. Start with Priority 1 (Critical) and Priority 2 (High) incidents only. As confidence grows, expand to lower priorities.
+> The screenshots and step names below match a reference ServiceNow instance. Adapt naming to your organization's profiles, workspaces, and connector menus.
 
-### 2. EDA Rulebook for ServiceNow Events
+### 1. Create an AAP API token for the MCP integration
 
-**Operational Impact:** None
+**Goal:** Create an Automation Platform credential that ServiceNow can use when calling the Ansible MCP server.
 
-The EDA rulebook listens for incoming webhook events from ServiceNow and triggers the enrichment workflow.
+In Ansible Automation Platform:
+
+- Go to **Access Management**
+- Open **API Tokens**
+- Select **Create API token**
+- Fill in an optional description, set the token **scope** appropriately, then **Create token**
+- **Copy the token immediately** (it may not be shown again)
+
+### 2. Connect ServiceNow to the Ansible Automation Platform MCP server
+
+**Goal:** Register the MCP integration inside ServiceNow so LEAP can call into AAP.
+
+Starting from the **ServiceNow dashboard home page**:
+
+- Open **Workspaces → Learning-Enhanced Automation Platform** (LEAP)
+- Open **settings** (the demo calls out the settings control on the LEAP home page)
+- Go to **Connectors**
+- Click **+ Connect**
+- Enter the **Ansible Automation Platform MCP server URL** and **API key** (the API token from the previous step), then **save**
+
+**Success criteria:** ServiceNow confirms the connector is saved and LEAP can reach the MCP endpoint (see [Validation](#validation)).
+
+### 3. Map a LEAP opportunity to an AAP remediation playbook
+
+**Goal:** Associate a LEAP “opportunity” with a validated Ansible remediation artifact so the right automation is available when an incident matches.
+
+In LEAP:
+
+- Find a LEAP opportunity and select **Review**
+- Open **Review details**
+- Confirm a **valid remediation playbook** is identified for the scenario (demo example: restoring a broken web application)
+- **Save and close** the mapping workflow
+
+**Success criteria:** The opportunity shows a matched AAP playbook and is ready for operational use.
+
+### 4. Remediate an incident via LEAP (“Execute Ansible playbooks”)
+
+**Goal:** Use the Service Operations experience to drive governed playbook execution through LEAP + MCP + AAP.
+
+- Go to the **Service Operations** workspace
+- Select an incident to remediate
+- Choose **Execute Ansible playbooks**
+- Use the **LEAP assistant connected to AAP** to request a resolution for the incident
+- LEAP should **confirm the service issue**, **match the incident to the correct AAP playbook**, and **run the playbook**
+- Verify the incident reaches the expected resolved state in ServiceNow after AAP completes successfully
+
+<h2 id="executable-artifacts-yaml-examples"></h2>
+
+## Executable artifacts (YAML examples)
+
+These excerpts mirror patterns used in higher-scoring guides: **AAP-as-code** for approved catalogs, plus a recommended **`servicenow.itsm`** follow-up so Ansible writes correlation data back to the incident independently of the LEAP polling cycle.
+
+### 1. Governed job template (AAP as code)
+
+Use `ansible.controller.job_template` (or `awx.awx.job_template` on community Galaxy if your standards allow) so remediation artifacts are **reviewable in Git** and promoted like any other automation.
 
 ```yaml
 ---
-- name: ServiceNow incident enrichment
-  hosts: all
-  sources:
-    - ansible.eda.webhook:
-        host: 0.0.0.0
-        port: 5000
-
-  rules:
-    - name: New high-priority ServiceNow incident
-      condition: event.payload.incident_number is defined and event.payload.priority in ["1", "2"]
-      action:
-        run_workflow_template:
-          organization: "Default"
-          name: "ServiceNow Incident Enrichment"
-          extra_vars:
-            incident_number: "{{ event.payload.incident_number }}"
-            short_description: "{{ event.payload.short_description }}"
-            affected_ci: "{{ event.payload.affected_ci }}"
-            priority: "{{ event.payload.priority }}"
-```
-
-The rulebook extracts the incident number, description, affected configuration item (CI), and priority from the ServiceNow webhook payload, then passes them to the enrichment workflow.
-
-### 3. Gather Diagnostic Context from Affected Host
-
-**Operational Impact:** None (read-only)
-
-The first job in the enrichment workflow connects to the affected host and gathers diagnostic data. The host is identified from the ServiceNow CI (Configuration Item) field.
-
-```yaml
-- name: Gather diagnostic context for ServiceNow incident
-  hosts: "{{ affected_ci }}"
-  become: true
+- name: Example - ensure LEAP-facing remediation template exists
+  hosts: localhost
+  gather_facts: false
+  vars:
+    aap_host: "https://controller.example.com"
+    aap_token: "{{ vault_aap_oauth_token }}"
   tasks:
-    - name: Get systemd service status for common services
-      ansible.builtin.shell:
-        cmd: "systemctl list-units --state=failed --no-pager"
-      register: failed_services
-
-    - name: Collect recent syslog entries
-      ansible.builtin.command:
-        cmd: "journalctl --since '2 hours ago' --priority=err --no-pager"
-      register: recent_errors
-
-    - name: Check disk usage
-      ansible.builtin.command:
-        cmd: "df -h"
-      register: disk_usage
-
-    - name: Check memory usage
-      ansible.builtin.command:
-        cmd: "free -m"
-      register: memory_usage
-
-    - name: Gather Ansible facts
-      ansible.builtin.setup:
-        filter:
-          - ansible_distribution*
-          - ansible_memtotal_mb
-          - ansible_processor_vcpus
-          - ansible_uptime_seconds
+    - name: Create or update governed job template
+      ansible.controller.job_template:
+        controller_host: "{{ aap_host }}"
+        controller_oauth_token: "{{ aap_token }}"
+        name: "LEAP - Restore web application"
+        description: "Approved remediation for LEAP / MCP; restrict via RBAC and inventory limits."
+        job_type: "run"
+        playbook: "playbooks/remediate_webapp.yml"
+        project: "Org - Trusted playbooks"
+        inventory: "Production - Linux"
+        execution_environment: "Supported EE - RHEL"
+        credential:
+          - "Prod - SSH automation"
+          - "Prod - Vault lookup"
+        ask_limit_on_launch: true
+        ask_variables_on_launch: true
+        state: present
 ```
 
-> **Adapt the diagnostic checks to your environment.**
+Tune **`ask_limit_on_launch`** and surveys so operators (and LEAP-driven runs) cannot bypass blast-radius controls.
+
+### 2. Recommended: ITSM follow-up with servicenow.itsm
+
+> **Why recommended, not optional?**
 >
-> The tasks above are examples for Linux hosts. For network devices, use `ansible.netcommon` fact gathering. For Windows, use `win_shell` and `win_service`. The key principle is: gather enough context that the AI model can make an informed diagnosis.
+> LEAP polls the MCP server to check job status, but that polling window is bounded by the LEAP session. A `servicenow.itsm` follow-up from AAP writes deterministic status back to the incident the moment the job finishes -- regardless of whether the LEAP session is still active, whether the job ran asynchronously, or whether a human even triggered it. This makes AAP the authoritative record of what happened and when.
 
-### 4. Analyze with Red Hat AI
-
-**Operational Impact:** None (API call only)
-
-With diagnostic data collected, the next job sends everything to Red Hat AI for analysis.
+**The bigger picture: multi-agent visibility.** In production environments, LEAP is not the only client that may drive automation through AAP. AI coding agents (Cursor, Claude Code, Windsurf), ChatOps bots, scheduled workflows, and other MCP-capable clients can all launch job templates through the same AAP MCP server. When AAP writes the correlation data back to ServiceNow via `servicenow.itsm`, every agent and operator sharing that incident gets visibility into what ran -- even if they did not originate the job. LEAP can then act on that new information (updated work notes, state changes) in subsequent interactions, creating a feedback loop that works across any combination of human and AI-driven automation.
 
 ```yaml
-- name: Analyze incident with Red Hat AI
+---
+- name: Correlate AAP job to ServiceNow incident
   hosts: localhost
+  gather_facts: false
+  vars:
+    snow_instance: "yourcompany.service-now.com"
   tasks:
-    - name: Build context-rich prompt
-      ansible.builtin.set_fact:
-        analysis_prompt: |
-          ServiceNow Incident: {{ incident_number }}
-          Description: {{ short_description }}
-          Priority: {{ priority }}
-          Affected System: {{ affected_ci }}
-
-          Failed services: {{ hostvars[affected_ci].failed_services.stdout }}
-          Recent errors: {{ hostvars[affected_ci].recent_errors.stdout | truncate(2000) }}
-          Disk usage: {{ hostvars[affected_ci].disk_usage.stdout }}
-          Memory: {{ hostvars[affected_ci].memory_usage.stdout }}
-
-          Based on the above diagnostic data, provide:
-          1. Root cause analysis
-          2. Recommended remediation steps
-          3. Risk assessment (Low/Medium/High)
-
-    - name: Send to Red Hat AI for analysis
-      redhat.ai.completion:
-        base_url: "http://{{ rhelai_server }}:{{ rhelai_port }}"
-        token: "{{ rhelai_token }}"
-        prompt: "{{ analysis_prompt }}"
-        model_path: "/root/.cache/instructlab/models/granite-8b-lab-v1"
-      delegate_to: localhost
-      register: ai_analysis
-```
-
-### 5. Enrich the ServiceNow Ticket
-
-**Operational Impact:** Low (writes to ServiceNow only)
-
-The final step writes the AI analysis and diagnostic data back into the ServiceNow incident using the `servicenow.itsm` collection.
-
-```yaml
-- name: Enrich ServiceNow incident with AI analysis
-  hosts: localhost
-  tasks:
-    - name: Update incident with AI-driven work notes
+    - name: Append work note with remediation correlation
       servicenow.itsm.incident:
         instance:
           host: "{{ snow_instance }}"
-          username: "{{ snow_username }}"
-          password: "{{ snow_password }}"
+          username: "{{ snow_api_user }}"
+          password: "{{ snow_api_password }}"
         number: "{{ incident_number }}"
-        state: in_progress
+        state: present
         other:
           work_notes: |
-            [AI-Enriched Diagnostic Report]
-            ================================
-            Analysis performed by: Red Hat AI (Granite 8B)
-            Timestamp: {{ ansible_date_time.iso8601 }}
-
-            ROOT CAUSE ANALYSIS:
-            {{ ai_analysis.choice_0_text }}
-
-            DIAGNOSTIC DATA COLLECTED:
-            - Failed services: {{ hostvars[affected_ci].failed_services.stdout | truncate(500) }}
-            - Recent errors: {{ hostvars[affected_ci].recent_errors.stdout | truncate(500) }}
-            - Disk usage: {{ hostvars[affected_ci].disk_usage.stdout }}
-            - Memory: {{ hostvars[affected_ci].memory_usage.stdout }}
-
-            [End AI-Enriched Report]
-
-    - name: Notify team on Slack
-      ansible.builtin.uri:
-        url: "{{ slack_webhook_url }}"
-        method: POST
-        body_format: json
-        body:
-          text: |
-            :white_check_mark: *Incident {{ incident_number }} enriched*
-            *Description:* {{ short_description }}
-            *AI Analysis:* {{ ai_analysis.choice_0_text | truncate(500) }}
-            View in ServiceNow: https://{{ snow_instance }}/nav_to.do?uri=incident.do?sysparm_query=number={{ incident_number }}
+            Ansible Automation Platform remediation completed.
+            Job ID: {{ tower_job_id | default('unknown') }}
+            Job template: {{ job_template_name | default('unknown') }}
+            Status: {{ job_status | default('unknown') }}
+      when: incident_number is defined
 ```
 
-After this workflow completes, the engineer opening the ServiceNow incident sees a detailed diagnostic report in the work notes -- including AI-generated root cause analysis, failed services, recent errors, disk and memory status -- all gathered and analyzed automatically.
+Use a **dedicated** ServiceNow integration user with least privilege (often **read/update incident work notes** only).
 
-> **RBAC:** Scope the ServiceNow credential tightly.
+> **When to skip this step.**
 >
-> The Ansible credential for ServiceNow should have write access only to the `work_notes` field on incidents. Use a dedicated ServiceNow integration user with the `itil` role scoped to incident updates only.
+> If your environment is strictly LEAP-only (no other AI agents, no async jobs, no out-of-band automation) and LEAP's built-in polling gives you sufficient visibility, you can defer this step. Add it when you expand to multiple automation clients or need an audit-grade correlation trail.
 
 <h2 id="validation"></h2>
 
 ## Validation
 
-| Stage | What to Verify | Success Indicator |
-|-------|---------------|-------------------|
-| **1. ServiceNow → EDA** | Business Rule fires and EDA receives the webhook | EDA Controller shows the rulebook activation as **Running**; event log shows the ServiceNow payload |
-| **2. Gather Context** | Diagnostic data was collected from the affected host | First job in the workflow completes green in Workflow Visualizer |
-| **3. AI Analysis** | Red Hat AI returned a root cause analysis | AI analysis job completes green; check job output for `ai_analysis.choice_0_text` |
-| **4. Enrich Ticket** | Work notes were written to the ServiceNow incident | Open the incident in ServiceNow; **Work Notes** tab shows the AI-enriched diagnostic report |
-| **5. Notify Team** | Slack/Mattermost message was sent | Check the channel for the enrichment notification |
+| Checkpoint | What to verify | Success indicator |
+|-----------|----------------|-------------------|
+| **AAP token** | Token scopes and user/team permissions | User can see only approved job templates in the UI; smoke-launch succeeds (see below) |
+| **ServiceNow connector** | MCP URL + credential | Connector saves; LEAP surfaces playbooks tied to opportunities |
+| **Opportunity mapping** | Playbook binding | Opportunity review shows the expected AAP job template or workflow |
+| **Execution** | Incident-driven run | AAP shows a new job with expected template name; exit status matches policy |
 
-**Quick validation test** -- Create a test incident in ServiceNow and verify the enrichment:
+### Sample verification artifacts
+
+Sanitize hostnames, tokens, and IDs before sharing. Below shapes are what you should expect when debugging.
+
+**1. AAP API -- job template visible to integration user**
 
 ```bash
-curl -s "https://your-instance.service-now.com/api/now/table/incident" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
-  -d '{
-    "short_description": "Test: web server unresponsive",
-    "priority": "2",
-    "cmdb_ci": "web01.example.com",
-    "description": "Web server web01 is not responding to health checks."
-  }' | jq '.result.number'
+curl -sS -H "Authorization: Bearer <AAP_TOKEN>" \
+  "https://controller.example.com/api/v2/job_templates/?name__icontains=LEAP"
 ```
 
-After creating the incident, verify in ServiceNow that work notes have been populated with the AI-enriched diagnostic report within 2-3 minutes.
+Example (truncated) response shape:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 42,
+      "name": "LEAP - Restore web application",
+      "type": "job_template"
+    }
+  ]
+}
+```
+
+**2. AAP API -- launch job (smoke test)**
+
+```bash
+curl -sS -X POST \
+  -H "Authorization: Bearer <AAP_TOKEN>" \
+  -H "Content-Type: application/json" \
+  "https://controller.example.com/api/v2/job_templates/42/launch/" \
+  -d '{"limit":"web-prod-01.example.com"}'
+```
+
+Example (truncated) response:
+
+```json
+{
+  "job": 9876
+}
+```
+
+**3. Job completed successfully**
+
+```bash
+curl -sS -H "Authorization: Bearer <AAP_TOKEN>" \
+  "https://controller.example.com/api/v2/jobs/9876/"
+```
+
+Look for `"status":"successful"` and capture **`job_template`** / **`id`** for your incident correlation note.
+
+**4. Optional -- ServiceNow incident API sanity check**
+
+```bash
+curl -sS -u "integration_user:<PASSWORD>" \
+  "https://yourcompany.service-now.com/api/now/table/incident?sysparm_query=number=INC0010001&sysparm_fields=number,state,work_notes"
+```
+
+Confirm **`work_notes`** contains your correlation block after the `servicenow.itsm` follow-up task runs.
 
 ### Troubleshooting
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Incident created but EDA doesn't trigger | Business Rule is not active, or webhook URL is incorrect | Verify the Business Rule is active and set to fire on Insert; check the EDA endpoint URL |
-| EDA triggers but workflow fails at "Gather Context" | Affected CI hostname doesn't match Ansible inventory | Ensure the ServiceNow CI `name` field maps to a host in your AAP inventory |
-| AI analysis returns generic or unhelpful results | Diagnostic data is too sparse or prompt is missing context | Verify the diagnostic playbook collected data; check that `hostvars` are being passed correctly between jobs |
-| ServiceNow ticket not updated | Credential error or incorrect instance URL | Verify the ServiceNow credential in AAP; test with `servicenow.itsm.incident_info` first |
-| Work notes show raw Jinja2 instead of resolved values | Variable not passed between workflow jobs | Use `set_stats` or workflow extra vars to pass data between jobs in the workflow |
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Connector save fails | Wrong MCP base URL, TLS trust chain, or network path | Validate URL, certificates, egress/proxy allow lists, and MCP health outside ServiceNow |
+| LEAP can’t list/playbooks | Token scope too narrow or wrong AAP user | Recreate token with correct RBAC; confirm the user can see the job template in AAP |
+| Playbook runs but wrong target | Inventory/limit mismatch or survey vars missing | Standardize surveys/extra vars; enforce limits via approved job templates |
+| “Success” in UI but service still broken | Playbook is incomplete or verification step is insufficient | Add post-check tasks; gate “resolved” updates on objective health checks |
+| 401/403 from AAP API | Expired token or wrong OAuth scope | Rotate token; verify user belongs to team that owns the template |
+
+<h2 id="security-governance-and-operational-risk"></h2>
+
+## Security, Governance, and Operational Risk
+
+Unlike “ticket-only enrichment” patterns, **executing Ansible changes infrastructure and application state**. Treat this integration as production automation:
+
+- **Prefer least privilege** on the AAP token and integration user; scope to only the job templates/workflows required
+- **Use approved job templates/workflows** (don’t expose arbitrary playbook execution)
+- **Enforce change controls**: approvals, maintenance windows, and/or human gates where required
+- **Treat MCP like any integration endpoint**: protect with TLS, monitoring, and rotation for API keys/tokens
+- **Audit everything**: AAP job output + ServiceNow history should tell the same story
 
 <h2 id="maturity-path"></h2>
 
 ## Maturity Path
 
-| Maturity | Approach | How It Works | AI Role |
-|----------|----------|-------------|---------|
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6b6.png" width="20" style="vertical-align:text-bottom;"> **Crawl** | Ticket Enrichment | Incident created → EDA → gather context → AI analyzes → enriched work notes added → **human remediates** | Read-only: AI enriches tickets, humans act |
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3c3.png" width="20" style="vertical-align:text-bottom;"> **Walk** | Enrichment + Curated Remediation | Incident created → EDA → enrich ticket → AI **recommends a pre-approved playbook** → human approves via ServiceNow → playbook executes | AI selects from existing automation; ServiceNow approval gates execution |
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f680.png" width="20" style="vertical-align:text-bottom;"> **Run** | Enrichment + Auto-Remediation | Incident created → EDA → enrich ticket → AI **generates remediation playbook** → policy engine validates → playbook executes → ticket auto-resolved | AI generates and executes automation within policy boundaries |
+| Maturity | What LEAP + AAP MCP enables | Typical gating |
+|----------|----------------------------|----------------|
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6b6.png" width="20" style="vertical-align:text-bottom;"> **Crawl** | Standardize the connector + map a small set of “golden path” playbooks | Manual selection; narrow incident categories |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3c3.png" width="20" style="vertical-align:text-bottom;"> **Walk** | Expand opportunity mapping catalog; add surveys/limits; integrate approvals | Change management + playbook reviews |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f680.png" width="20" style="vertical-align:text-bottom;"> **Run** | Higher-confidence matching + broader coverage + policy guardrails | Automated guardrails, SLO-driven execution, continuous verification |
 
-> **Crawl is the starting point for most organizations.**
->
-> Ticket enrichment delivers immediate value with zero production risk. Let your Tier 1 team experience AI-enriched tickets for 30-60 days before moving to Walk, where AI begins recommending remediation actions.
+<h2 id="measuring-success"></h2>
+
+## Measuring success
+
+Quantify adoption the same way top guides anchor business outcomes to observable signals:
+
+| Metric | What good looks like | How to measure |
+|--------|---------------------|----------------|
+| **MTTR for mapped scenarios** | Down vs baseline after LEAP + MCP go-live | ITSM timestamps (open → resolved) for incidents tagged to LEAP-mapped categories |
+| **Repeat incident rate** | Fewer reopen tickets for the same root cause | Problem/incident correlation IDs in ServiceNow over 30/90 days |
+| **Automation reuse** | Same certified job template used across many incidents | AAP job runs per template ID; LEAP opportunity linkage |
+| **Governance coverage** | No unauthorized templates executed via integration | AAP RBAC audits; token scoped user cannot launch non-approved templates |
+| **Audit completeness** | Every remediation ties ITSM ↔ job ID ↔ host change | Work notes from `servicenow.itsm` follow-up; AAP job `id` in notes |
 
 <h2 id="related-guides"></h2>
 
 ## Related Guides
 
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **AIOps reference architecture:** See [AIOps automation with Ansible](README-AIOps.md) for the full self-healing pipeline (Crawl → Walk → Run), including Lightspeed playbook generation and policy enforcement.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **Using Splunk as the trigger?** See [Triggering Automated Remediation from Splunk Alerts](README-AIOps-Splunk.md) for connecting Splunk alerts to the same AIOps pipeline.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Need to deploy the AI backend?** See [AI Infrastructure automation with Ansible](README-IA.md) for automating Red Hat AI provisioning with the `infra.ai` and `redhat.ai` collections.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **New to Event-Driven Ansible?** See [Get started with EDA (Ansible Rulebook)](https://access.redhat.com/articles/7136720) for the fundamentals of rulebooks, event sources, and actions.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Existing ServiceNow enrichment guide:** See [ServiceNow ITSM Ticket Enrichment Automation](https://access.redhat.com/articles/7127603) on access.redhat.com for the legacy KB article on this topic.
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **AIOps reference architecture:** [AIOps automation with Ansible](README-AIOps.md)
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **EDA (alternate trigger pattern):** [Get started with EDA (Ansible Rulebook)](https://access.redhat.com/articles/7136720)
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **ServiceNow enrichment:** [ServiceNow ITSM Ticket Enrichment Automation](README-ServiceNow-ITSM.md)
 
 ---
 
 ## Summary
 
-With automated ticket enrichment in place, your Tier 1 engineers no longer spend the first 15-30 minutes of every incident gathering context. ServiceNow incidents arrive pre-enriched with diagnostic data, AI-generated root cause analysis, and recommended next steps. This reduces MTTR, improves diagnostic consistency across shifts, and creates the foundation for further AIOps maturity -- from enrichment (Crawl) to curated remediation (Walk) to full self-healing (Run).
+ServiceNow LEAP helps operations teams move from “we have incidents” to “we have **repeatable, governed remediation**.” By connecting LEAP to Ansible Automation Platform through an **MCP server**, teams can **surface the right playbook**, **run it with AAP controls**, and **close the loop back in ServiceNow** -- reducing MTTR, removing silos, and making automation operational rather than theoretical.
+
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale AIOps automation tailored to your environment |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
 
 ---
 

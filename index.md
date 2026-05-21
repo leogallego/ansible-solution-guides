@@ -13,28 +13,49 @@ patternfly: true
     <div class="cards-sidebar__section">
       <h4 class="cards-sidebar__title">Type</h4>
       <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="aiops"> AIOps
+      </label>
+      <label class="cards-sidebar__checkbox">
         <input type="checkbox" value="foundational"> Foundational
       </label>
       <label class="cards-sidebar__checkbox">
-        <input type="checkbox" value="integration"> Integration
+        <input type="checkbox" value="infrastructure"> Infrastructure
+      </label>
+    </div>
+    <div class="cards-sidebar__section">
+      <h4 class="cards-sidebar__title">Status</h4>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="published"> Published
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="wip"> Work in Progress
       </label>
     </div>
     <div class="cards-sidebar__section">
       <h4 class="cards-sidebar__title">Partners</h4>
       <label class="cards-sidebar__checkbox">
-        <input type="checkbox" value="instana"> IBM Instana
-      </label>
-      <label class="cards-sidebar__checkbox">
-        <input type="checkbox" value="servicenow"> ServiceNow
-      </label>
-      <label class="cards-sidebar__checkbox">
-        <input type="checkbox" value="splunk"> Splunk
+        <input type="checkbox" value="aws"> AWS
       </label>
       <label class="cards-sidebar__checkbox">
         <input type="checkbox" value="azure"> Azure
       </label>
       <label class="cards-sidebar__checkbox">
         <input type="checkbox" value="edb"> EDB PostgreSQL
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="instana"> IBM Instana
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="redhat-ai"> Red Hat AI
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="servicenow"> ServiceNow
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="netbox"> NetBox
+      </label>
+      <label class="cards-sidebar__checkbox">
+        <input type="checkbox" value="splunk"> Splunk
       </label>
     </div>
   </aside>
@@ -43,7 +64,7 @@ patternfly: true
     <p id="guide-search-count" class="cards-search__count"></p>
 
     <div class="pf-v6-l-gallery pf-m-gutter cards-gallery" id="main-gallery">
-      <a href="{{ '/README-AIOps' | relative_url }}" class="card-link" data-partners="foundational">
+      <a href="{{ '/README-AIOps' | relative_url }}" class="card-link" data-partners="aiops,foundational,published">
         <div class="pf-v6-c-card card-foundational">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -65,13 +86,35 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-Instana-AIOps' | relative_url }}" class="card-link" data-partners="instana,integration">
+      <a href="{{ '/README-EDB' | relative_url }}" class="card-link" data-partners="edb,infrastructure,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
-            <span class="pf-v6-c-label pf-m-orange">
+            <span class="pf-v6-c-label pf-m-green">
               <span class="pf-v6-c-label__content">
-                <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
-                Work in Progress
+                <i class="fas fa-check-circle pf-v6-c-label__icon"></i>
+                Solution Guide
+              </span>
+            </span>
+          </div>
+          <div class="pf-v6-c-card__title">
+            <h3 class="pf-v6-c-card__title-text">High-Availability AAP with EDB PostgreSQL DR</h3>
+          </div>
+          <div class="pf-v6-c-card__body">
+            Multi-datacenter Active-Passive disaster recovery for Ansible Automation Platform using EDB Postgres Advanced Server and EDB Failover Manager with sub-5-minute RTO.
+          </div>
+          <div class="pf-v6-c-card__footer">
+            <img src="{{ '/assets/images/edb.png' | relative_url }}" alt="EDB" class="card-partner-logo">
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ '/README-Instana-AIOps' | relative_url }}" class="card-link" data-partners="instana,aiops,published">
+        <div class="pf-v6-c-card">
+          <div class="pf-v6-c-card__header">
+            <span class="pf-v6-c-label pf-m-green">
+              <span class="pf-v6-c-label__content">
+                <i class="fas fa-check-circle pf-v6-c-label__icon"></i>
+                Solution Guide
               </span>
             </span>
           </div>
@@ -87,73 +130,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-AIOps-ServiceNow' | relative_url }}" class="card-link" data-partners="servicenow,integration">
-        <div class="pf-v6-c-card">
-          <div class="pf-v6-c-card__header">
-            <span class="pf-v6-c-label pf-m-orange">
-              <span class="pf-v6-c-label__content">
-                <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
-                Work in Progress
-              </span>
-            </span>
-          </div>
-          <div class="pf-v6-c-card__title">
-            <h3 class="pf-v6-c-card__title-text">Reducing MTTR with ServiceNow Ticket Enrichment</h3>
-          </div>
-          <div class="pf-v6-c-card__body">
-            Automatically enrich ServiceNow incidents with diagnostic data and AI-driven root cause analysis -- the lowest-risk entry point for AIOps.
-          </div>
-          <div class="pf-v6-c-card__footer">
-            <img src="{{ '/assets/images/servicenow-logo.png' | relative_url }}" alt="ServiceNow" class="card-partner-logo">
-          </div>
-        </div>
-      </a>
-
-      <a href="{{ '/README-AIOps-Azure-Service-Bus' | relative_url }}" class="card-link" data-partners="azure,integration">
-        <div class="pf-v6-c-card">
-          <div class="pf-v6-c-card__header">
-            <span class="pf-v6-c-label pf-m-orange">
-              <span class="pf-v6-c-label__content">
-                <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
-                Work in Progress
-              </span>
-            </span>
-          </div>
-          <div class="pf-v6-c-card__title">
-            <h3 class="pf-v6-c-card__title-text">Event-Driven Remediation with Azure Service Bus</h3>
-          </div>
-          <div class="pf-v6-c-card__body">
-            Connect Azure Service Bus Queues to Event-Driven Ansible for real-time event consumption, AI-driven diagnosis, and automated remediation across hybrid Azure infrastructure.
-          </div>
-          <div class="pf-v6-c-card__footer">
-            <img src="{{ '/assets/images/azure-logo.png' | relative_url }}" alt="Azure" class="card-partner-logo">
-          </div>
-        </div>
-      </a>
-
-      <a href="{{ '/README-AIOps-Splunk-ITSI' | relative_url }}" class="card-link" data-partners="splunk,integration">
-        <div class="pf-v6-c-card">
-          <div class="pf-v6-c-card__header">
-            <span class="pf-v6-c-label pf-m-orange">
-              <span class="pf-v6-c-label__content">
-                <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
-                Work in Progress
-              </span>
-            </span>
-          </div>
-          <div class="pf-v6-c-card__title">
-            <h3 class="pf-v6-c-card__title-text">AIOps with Splunk and Event-Driven Ansible</h3>
-          </div>
-          <div class="pf-v6-c-card__body">
-            Three use cases for closed-loop AIOps: ITSI predictive anomaly detection with MLTK, RHEL server remediation with AI-enriched diagnostics, and network OSPF remediation with Lightspeed-generated playbooks.
-          </div>
-          <div class="pf-v6-c-card__footer">
-            <img src="{{ '/assets/images/splunk-logo.png' | relative_url }}" alt="Splunk" class="card-partner-logo">
-          </div>
-        </div>
-      </a>
-
-      <a href="{{ '/README-IA' | relative_url }}" class="card-link" data-partners="integration">
+      <a href="{{ '/README-IA' | relative_url }}" class="card-link" data-partners="redhat-ai,aiops,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -175,7 +152,7 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-Intelligent-Assistant-RHAIIS' | relative_url }}" class="card-link" data-partners="integration">
+      <a href="{{ '/README-Intelligent-Assistant-RHAIIS' | relative_url }}" class="card-link" data-partners="redhat-ai,aiops,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
             <span class="pf-v6-c-label pf-m-green">
@@ -197,27 +174,187 @@ patternfly: true
         </div>
       </a>
 
-      <a href="{{ '/README-EDB' | relative_url }}" class="card-link" data-partners="edb,integration">
+      <a href="{{ '/README-AIOps-ServiceNow' | relative_url }}" class="card-link" data-partners="servicenow,aiops,published">
         <div class="pf-v6-c-card">
           <div class="pf-v6-c-card__header">
-            <span class="pf-v6-c-label pf-m-orange">
+            <span class="pf-v6-c-label pf-m-green">
               <span class="pf-v6-c-label__content">
-                <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
-                Work in Progress
+                <i class="fas fa-check-circle pf-v6-c-label__icon"></i>
+                Solution Guide
               </span>
             </span>
           </div>
           <div class="pf-v6-c-card__title">
-            <h3 class="pf-v6-c-card__title-text">High-Availability AAP with EDB PostgreSQL DR</h3>
+            <h3 class="pf-v6-c-card__title-text">Unlock AIOps with ServiceNow LEAP and Ansible MCP server</h3>
           </div>
           <div class="pf-v6-c-card__body">
-            Multi-datacenter Active-Passive disaster recovery for Ansible Automation Platform using EDB Postgres Advanced Server and EDB Failover Manager with sub-5-minute RTO.
+            Cut incident MTTR from hours to minutes: LEAP identifies remediation opportunities, the Ansible MCP server surfaces approved playbooks, and governed execution closes incidents with full audit trail.
           </div>
           <div class="pf-v6-c-card__footer">
-            <span class="pf-v6-c-label pf-m-outline pf-m-compact"><span class="pf-v6-c-label__content">EDB PostgreSQL</span></span>
+            <img src="{{ '/assets/images/servicenow-logo.png' | relative_url }}" alt="ServiceNow" class="card-partner-logo">
           </div>
         </div>
       </a>
+
+      <a href="{{ '/README-AIOps-Splunk-ITSI' | relative_url }}" class="card-link" data-partners="splunk,aiops,published">
+        <div class="pf-v6-c-card">
+          <div class="pf-v6-c-card__header">
+            <span class="pf-v6-c-label pf-m-green">
+              <span class="pf-v6-c-label__content">
+                <i class="fas fa-check-circle pf-v6-c-label__icon"></i>
+                Solution Guide
+              </span>
+            </span>
+          </div>
+          <div class="pf-v6-c-card__title">
+            <h3 class="pf-v6-c-card__title-text">AIOps with Splunk and Event-Driven Ansible</h3>
+          </div>
+          <div class="pf-v6-c-card__body">
+            Three use cases for closed-loop AIOps: ITSI predictive anomaly detection with MLTK, RHEL server remediation with AI-enriched diagnostics, and network OSPF remediation with Lightspeed-generated playbooks.
+          </div>
+          <div class="pf-v6-c-card__footer">
+            <img src="{{ '/assets/images/splunk-logo.png' | relative_url }}" alt="Splunk" class="card-partner-logo">
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="cards-wip-section">
+      <h2>Work in Progress</h2>
+      <div class="pf-v6-l-gallery pf-m-gutter cards-gallery" id="wip-gallery">
+        <a href="{{ '/README-SQS' | relative_url }}" class="card-link" data-partners="aws,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">AIOps with AWS SQS and Event-Driven Ansible</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Connect Amazon SQS to Event-Driven Ansible so CloudWatch, EventBridge, and other AWS events trigger AI diagnosis and automated remediation without custom polling or Lambda glue code.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <img src="{{ '/assets/images/aws-logo.png' | relative_url }}" alt="AWS" class="card-partner-logo">
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ '/README-AIOps-Azure-Service-Bus' | relative_url }}" class="card-link" data-partners="azure,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">Event-Driven Remediation with Azure Service Bus</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Connect Azure Service Bus Queues to Event-Driven Ansible for real-time event consumption, AI-driven diagnosis, and automated remediation across hybrid Azure infrastructure.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <img src="{{ '/assets/images/azure-logo.png' | relative_url }}" alt="Azure" class="card-partner-logo">
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ '/README-Patching-RHEL' | relative_url }}" class="card-link" data-partners="redhat-ai,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">RHEL Patching with Red Hat Lightspeed and Ansible MCP Server</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Collapse CVE patching from days to minutes: Red Hat Lightspeed MCP identifies vulnerable RHEL VMs on OpenShift Virtualization, the AAP MCP server surfaces approved remediation, and governed execution patches the fleet with full audit trail.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <img src="{{ '/assets/images/redhat-ai-logo.png' | relative_url }}" alt="Red Hat AI" class="card-partner-logo">
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ '/README-Ansible-DevTools' | relative_url }}" class="card-link" data-partners="foundational,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">Consistent Automation Developer Experience with ADT</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Standardize your automation developer experience across the organization using Ansible Development Tools, from individual uv/pip installs to enterprise-governed Dev Spaces with 2-minute onboarding.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <span class="pf-v6-c-label pf-m-outline pf-m-compact"><span class="pf-v6-c-label__content">Foundational</span></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ '/README-NetBox-EDA-Config-Solution-Guide' | relative_url }}" class="card-link" data-partners="netbox,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">Event-Driven Network Configuration with NetBox and AAP</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Dynamic inventory from NetBox, event-driven NTP and banner configuration via config contexts and EDA webhooks, and zero-touch device provisioning workflows.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <span class="pf-v6-c-label pf-m-outline pf-m-compact"><span class="pf-v6-c-label__content">NetBox</span></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ '/README-NetBox-AAP-Solution-Guide' | relative_url }}" class="card-link" data-partners="netbox,aiops,wip">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <span class="pf-v6-c-label pf-m-orange">
+                <span class="pf-v6-c-label__content">
+                  <i class="fas fa-exclamation-triangle pf-v6-c-label__icon"></i>
+                  Work in Progress
+                </span>
+              </span>
+            </div>
+            <div class="pf-v6-c-card__title">
+              <h3 class="pf-v6-c-card__title-text">Automated WAN Circuit Failover with NetBox and AAP</h3>
+            </div>
+            <div class="pf-v6-c-card__body">
+              Event-driven WAN circuit failover using NetBox as the network source of truth, EDA for automated trigger, dynamic backup discovery, router reconfiguration, and automated incident reporting.
+            </div>
+            <div class="pf-v6-c-card__footer">
+              <span class="pf-v6-c-label pf-m-outline pf-m-compact"><span class="pf-v6-c-label__content">NetBox</span></span>
+            </div>
+          </div>
+        </a>
+
+      </div>
     </div>
 
     <div class="cards-contributing">
@@ -229,7 +366,7 @@ patternfly: true
       <summary>Legacy Solution Guides (Under Review)</summary>
       <p>These solution guides were published on access.redhat.com before this repository existed. They are being reviewed and will be migrated to the new format as full markdown guides.</p>
       <div class="pf-v6-l-gallery pf-m-gutter cards-gallery">
-        <a href="https://access.redhat.com/articles/7136383" class="card-link" target="_blank" data-partners="">
+        <a href="https://access.redhat.com/articles/7136383" class="card-link" target="_blank" data-partners="published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Automation Dashboard and Analytics</h3>
@@ -239,7 +376,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7127603" class="card-link" target="_blank" data-partners="servicenow">
+        <a href="{{ '/README-ServiceNow-ITSM' | relative_url }}" class="card-link" data-partners="servicenow,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">ServiceNow ITSM Ticket Enrichment</h3>
@@ -252,7 +389,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7136720" class="card-link" target="_blank" data-partners="">
+        <a href="https://access.redhat.com/articles/7136720" class="card-link" target="_blank" data-partners="published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Get started with EDA (Ansible Rulebook)</h3>
@@ -262,7 +399,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7123366" class="card-link" target="_blank" data-partners="cisco">
+        <a href="https://access.redhat.com/articles/7123366" class="card-link" target="_blank" data-partners="cisco,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Network Back Up and Configuration</h3>
@@ -275,7 +412,7 @@ patternfly: true
             </div>
           </div>
         </a>
-        <a href="https://access.redhat.com/articles/7123361" class="card-link" target="_blank" data-partners="cisco">
+        <a href="https://access.redhat.com/articles/7123361" class="card-link" target="_blank" data-partners="cisco,published">
           <div class="pf-v6-c-card">
             <div class="pf-v6-c-card__title">
               <h3 class="pf-v6-c-card__title-text">Network Fact Gathering & Reporting</h3>

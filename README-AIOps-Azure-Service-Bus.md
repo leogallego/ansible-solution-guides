@@ -67,7 +67,7 @@ What makes up the solution?
 
 > **EDA is part of Ansible Automation Platform.**
 >
-> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. Think of it simply as inputs and outputs. EDA is an automatic way for inputs into Ansible Automation Platform, where Automation controller is the output (running a job template or workflow).
+> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. Think of it simply as inputs and outputs. EDA is an automatic way for inputs into Ansible Automation Platform, where Ansible Automation Platform is the output (running a job template or workflow).
 
 ### Who Benefits
 
@@ -83,7 +83,7 @@ What makes up the solution?
 
 ### Ansible Automation Platform
 
-- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible (EDA Controller) support and the Azure Service Bus event source plugin.
+- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible support and the Azure Service Bus event source plugin.
 
 ### Featured Ansible Content Collections
 
@@ -91,7 +91,7 @@ What makes up the solution?
 |-----------|------|---------|
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/eda/content/eda%2Fplugins%2Fevent_source/azure_service_bus/">ansible.eda</a> | Certified | EDA event sources and filters -- includes the `azure_service_bus` event source plugin |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/azure/azcollection/">azure.azcollection</a> | Certified | Manage Azure resources (VMs, networking, storage, etc.) for remediation tasks |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Automation Controller configuration as code (job templates, workflows, surveys) |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | AAP configuration as code (job templates, workflows, surveys) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/redhat/ai">redhat.ai</a> | Certified | AI model inference using the OpenAI-compatible API via InstructLab |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/scm/">ansible.scm</a> | Certified | Git operations (commit and push generated playbooks) |
 
@@ -339,7 +339,7 @@ From here, the remediation follows the same pattern as the [AIOps Remediation Wo
 
 | Stage | What to Verify | Success Indicator |
 |-------|---------------|-------------------|
-| **1. Azure Event → EDA** | Message arrives in queue and EDA consumes it | EDA Controller shows the rulebook activation as **Running**; event log shows the Azure alert payload |
+| **1. Azure Event → EDA** | Message arrives in queue and EDA consumes it | AAP shows the rulebook activation as **Running**; event log shows the Azure alert payload |
 | **2. Enrichment Workflow** | AI analyzed the alert and notifications were sent | Workflow Visualizer shows all nodes green; Slack/ITSM received the AI diagnosis |
 | **3. Remediation Workflow** | Playbook was generated and committed | New playbook file exists in the Git repository; Job Template was created |
 | **4. Execute Remediation** | The fix was applied | Azure resource returns to healthy state; Azure Monitor alert auto-resolves |
@@ -372,7 +372,7 @@ az servicebus queue send \
 | EDA receives event but condition doesn't match | Azure alert payload structure differs from expected schema | Use `debug` action in the rulebook to print `event.body` and compare against your conditions |
 | Enrichment workflow runs but AI response is empty | Prompt is too vague or AI endpoint is unreachable | Verify the Red Hat AI server is running; test with a simple prompt first |
 | Azure VM info retrieval fails | Azure credentials in AAP are expired or lack permissions | Verify the Azure Service Principal credential; test with `azure.azcollection.azure_rm_virtualmachine_info` |
-| Messages pile up in the dead-letter queue | EDA consumer is crashing or message format is unexpected | Check EDA Controller logs; inspect dead-letter messages in Azure Portal for error details |
+| Messages pile up in the dead-letter queue | EDA consumer is crashing or message format is unexpected | Check EDA logs in AAP; inspect dead-letter messages in Azure Portal for error details |
 
 <h2 id="maturity-path"></h2>
 
@@ -394,7 +394,7 @@ az servicebus queue send \
 
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **AIOps reference architecture:** See [AIOps automation with Ansible](README-AIOps.md) for the full end-to-end pipeline, including Lightspeed playbook generation, policy enforcement, and the broader AIOps maturity journey.
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **Using Splunk as the trigger?** See [Triggering Automated Remediation from Splunk Alerts](README-AIOps-Splunk.md) for connecting Splunk alerts to the same AIOps pipeline.
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Looking for ServiceNow integration?** See [Reducing MTTR with Automated ServiceNow Ticket Enrichment](README-AIOps-ServiceNow.md) for ticket enrichment and ITSM-driven remediation.
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a1.png" width="20" style="vertical-align:text-bottom;"> **Looking for ServiceNow integration?** See [Unlock AIOps with ServiceNow LEAP and Ansible MCP server](README-AIOps-ServiceNow.md) for LEAP/MCP-driven remediation and related ITSM patterns (see also [KB 7127603](https://access.redhat.com/articles/7127603)).
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e0.png" width="20" style="vertical-align:text-bottom;"> **Need to deploy the AI backend?** See [AI Infrastructure automation with Ansible](README-IA.md) for automating Red Hat AI provisioning with the `infra.ai` and `redhat.ai` collections.
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **New to Event-Driven Ansible?** See [Get started with EDA (Ansible Rulebook)](https://access.redhat.com/articles/7136720) for the fundamentals of rulebooks, event sources, and actions.
 

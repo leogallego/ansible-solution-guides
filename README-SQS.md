@@ -93,7 +93,7 @@ What makes up the solution?
 
 > **EDA is part of Ansible Automation Platform.**
 >
-> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. EDA is an automatic way for inputs into Ansible Automation Platform, where Automation controller is the output (running a job template or workflow).
+> EDA uses rulebooks to monitor events, then executes specified job templates or workflows based on the event. EDA is an automatic way for inputs into Ansible Automation Platform, where Ansible Automation Platform is the output (running a job template or workflow).
 
 ### Who Benefits
 
@@ -109,7 +109,7 @@ What makes up the solution?
 
 ### Ansible Automation Platform
 
-- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible (EDA Controller) support.
+- **Ansible Automation Platform 2.5+** -- Required for enterprise Event-Driven Ansible support.
 
 ### Featured Ansible Content Collections
 
@@ -117,7 +117,7 @@ What makes up the solution?
 |-----------|------|---------|
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/eda/">ansible.eda</a> | Certified | EDA event sources and filters (includes `aws_sqs_queue` source plugin) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/amazon/aws/">amazon.aws</a> | Certified | AWS resource management (EC2, S3, CloudWatch, SQS) |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Automation Controller configuration as code (job templates, workflows, surveys) |
+| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | AAP configuration as code (job templates, workflows, surveys) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/scm/">ansible.scm</a> | Certified | Git operations (commit and push generated playbooks) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/validated/infra/ai">infra.ai</a> | Validated | Provisions RHEL AI infrastructure (AWS, Azure, GCP, bare metal) |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/redhat/ai">redhat.ai</a> | Certified | Configures and serves AI models using InstructLab |
@@ -566,7 +566,7 @@ Validate each stage of the pipeline independently:
 | Stage | What to Verify | How to Test | Success Indicator |
 |-------|---------------|-------------|-------------------|
 | **SQS Queue** | Messages are arriving in the queue | Send a test message: `aws sqs send-message --queue-url $QUEUE_URL --message-body '{"test": "eda-validation"}'` | Message appears in SQS console or via `aws sqs receive-message` |
-| **EDA + SQS** | EDA is polling and receiving messages | Check EDA Controller -- rulebook activation should show as **Running** | Event log shows received SQS messages |
+| **EDA + SQS** | EDA is polling and receiving messages | Check AAP -- rulebook activation should show as **Running** | Event log shows received SQS messages |
 | **Enrichment Workflow** | AI analyzed the incident and notifications were sent | Trigger a test alarm; check Workflow Visualizer | All workflow nodes green; chat/ITSM received the AI diagnosis |
 | **Remediation Workflow** | Lightspeed generated a playbook and it was committed | Check Git repo for new playbook; verify Job Template was created | Playbook file exists in repo; Job Template points to correct playbook |
 | **Execute Remediation** | The AI-generated playbook resolved the issue | Run the remediation Job Template | Job completes successfully; service returns to steady state |

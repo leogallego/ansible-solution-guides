@@ -1,8 +1,6 @@
 {% raw %}
 # Configuring Ansible Lightspeed intelligent assistant with Red Hat AI Inference Server on RHEL <!-- omit in toc -->
 
-> **Knowledge Base Article**: [https://access.redhat.com/articles/7130595](https://access.redhat.com/articles/7130595)
-
 <!--ARCADE EMBED START--><div style="position: relative; padding-bottom: calc(56.4263% + 41px); height: 0px; width: 100%;"><iframe src="https://demo.arcade.software/VIH1fhi64QjLKTnOc9ri?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true" title="Plugging Red Hat AI Inference Server into Ansible Lightspeed intelligent assistant" frameborder="0" loading="lazy" webkitallowfullscreen mozallowfullscreen allowfullscreen allow="clipboard-write" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; color-scheme: light;" ></iframe></div><!--ARCADE EMBED END-->
 
 The Ansible Lightspeed intelligent assistant is a generative AI service embedded directly into the Ansible Automation Platform UI. It offers on-demand expertise to help you administer and manage your automation, while removing some of the friction associated with onboarding, troubleshooting, and maintaining the platform. It provides direct access to trusted documentation and insights, helping you get up to speed with the platform faster, simplify administration, and resolve issues faster.
@@ -174,4 +172,18 @@ spec:
 Save the CR. The operator will reconcile and deploy/update the Ansible Lightspeed service.
 
 The Ansible Lightspeed intelligent assistant should now be ready for prompting in Ansible Automation Platform UI.
+
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale AI-powered automation |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
+
+---
+
+<img width="400" src="https://raw.githubusercontent.com/rhpds/showroom-lb2961-ai-driven-ansible-automation/refs/heads/main/solution_images/aap_logo.png">
 {% endraw %}

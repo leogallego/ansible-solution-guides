@@ -7,6 +7,8 @@
   }
 </style>
 
+<img src="assets/images/edb-hero.png" alt="Ansible + EDB PostgreSQL" style="max-width:400px">
+
 ## Overview
 
 When Ansible Automation Platform becomes mission-critical infrastructure -- orchestrating network changes, managing security compliance, or coordinating multi-cloud deployments -- downtime is not an option. A database failure, datacenter outage, or unplanned maintenance window can halt automation across the enterprise, blocking change tickets, delaying deployments, and leaving teams unable to respond to incidents.
@@ -234,55 +236,44 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 
 ### Data Flow During Normal Operations (DC1 Active)
 
-```
-User → GLB → HAProxy(DC1) → AAP Containers(DC1) → VIP(DC1) → PostgreSQL PRIMARY(DC1)
-                                                                      │
-                                    ┌─────────────────────────────────┼───────────────┐
-                                    │                                 │               │
-                                    ▼                                 ▼               ▼
-                            PG Standby DC1-2                  PG Standby DC1-3    S3/Barman
-                                                                      │
-                                                        Streaming Replication (WAN)
-                                                                      │
-                                                                      ▼
-                                                          PG Designated Primary DC2-1
-                                                                      │
-                                            ┌─────────────────────────┼──────────────┐
-                                            │                         │              │
-                                            ▼                         ▼              ▼
-                                    PG Standby DC2-2          PG Standby DC2-3   S3/Barman
+```mermaid
+flowchart LR
+    User --> GLB["Global LB"] --> HAProxy["HAProxy\n(DC1)"] --> AAP["AAP\n(DC1)"] --> VIP["VIP\n(DC1)"] --> PG1["PostgreSQL\nPRIMARY (DC1)"]
+
+    PG1 --> PG1S2["PG Standby\nDC1-2"]
+    PG1 --> PG1S3["PG Standby\nDC1-3"]
+    PG1 --> BAR1["S3 / Barman"]
+
+    PG1 -- "Streaming Replication\n(WAN)" --> PG2DP["PG Designated\nPrimary DC2-1"]
+
+    PG2DP --> PG2S2["PG Standby\nDC2-2"]
+    PG2DP --> PG2S3["PG Standby\nDC2-3"]
+    PG2DP --> BAR2["S3 / Barman"]
 ```
 
 ### Automated Failover Sequence (DC1 Failure)
 
-```
-1. EFM Detects Primary Failure (pg-dc1-1)
-   Time: T+0s
+```mermaid
+sequenceDiagram
+    participant EFM as EFM Agent
+    participant DC2PG as pg-dc2-1 (Designated Primary)
+    participant DC2VIP as VIP (DC2)
+    participant DC2AAP as AAP Containers (DC2)
+    participant GLB as Global Load Balancer
+    participant DNS as DNS / Clients
 
-2. EFM Promotes DC2 Designated Primary (pg-dc2-1)
-   Command: pg_ctl promote
-   Time: T+15s
-
-3. EFM Updates VIP (DC2)
-   VIP 10.2.2.100 moved to pg-dc2-1
-   Time: T+20s
-
-4. EFM Executes Post-Promotion Script
-   Script starts AAP containers in DC2
-   Time: T+25s to T+180s
-
-5. Global Load Balancer Detects DC2 Healthy
-   Health checks to DC2: PASSING
-   Route traffic to DC2
-   Time: T+200s
-
-6. DNS TTL Expiration
-   Clients resolve aap.example.com to DC2
-   Time: T+200s to T+260s (assuming 60s TTL)
-
-7. Failover Complete
-   Platform RTO: ~240s (4 minutes)
-   User-facing RTO: ~300s (5 minutes including DNS TTL)
+    Note over EFM: T+0s — Detects primary failure (pg-dc1-1)
+    EFM->>DC2PG: pg_ctl promote
+    Note over DC2PG: T+15s — Promoted to PRIMARY
+    EFM->>DC2VIP: Move VIP 10.2.2.100 to pg-dc2-1
+    Note over DC2VIP: T+20s — VIP updated
+    EFM->>DC2AAP: Post-promotion script starts AAP containers
+    Note over DC2AAP: T+25s–T+180s — Containers starting
+    GLB->>GLB: Health checks to DC2: PASSING
+    Note over GLB: T+200s — Route traffic to DC2
+    DNS->>DNS: Clients resolve aap.example.com to DC2
+    Note over DNS: T+200s–T+260s — DNS TTL expiration (60s)
+    Note over GLB,DNS: Failover complete · Platform RTO ~240s (4 min) · User-facing RTO ~300s (5 min)
 ```
 
 **Important operational impacts:**
@@ -324,7 +315,9 @@ User → GLB → HAProxy(DC1) → AAP Containers(DC1) → VIP(DC1) → PostgreSQ
 - **Quorum calculation:** Majority of configured nodes must be reachable for failover to proceed (e.g., 2 of 3 nodes, or 3 of 5 with witness)
 - **Split-brain prevention:** EFM requires majority consensus before promoting a standby to prevent multiple primaries
 
-> **Production recommendation:** Deploy a lightweight witness node (2 vCPU, 4GB RAM) in a third location or availability zone to maintain quorum during single-datacenter failures. This guide uses 3-node clusters per DC for simplicity; add witness nodes for production deployments requiring maximum availability.
+> **Production recommendation:** Use a witness node outside a failed DC for quorum.
+>
+> Deploy a lightweight witness node (2 vCPU, 4GB RAM) in a third location or availability zone to maintain quorum during single-datacenter failures. This guide uses 3-node clusters per DC for simplicity; add witness nodes for production deployments requiring maximum availability.
 
 #### AAP Databases (4 databases per PostgreSQL instance)
 
@@ -380,9 +373,13 @@ WAN Connectivity:
 - **Internal references use VIPs or HAProxy:** AAP components connect to database via HAProxy (`10.1.1.20` or `10.2.1.20`), which routes to the datacenter-local PostgreSQL VIP
 - **Why not use datacenter-agnostic names?** Explicit DC identifiers in hostnames aid troubleshooting, capacity planning, and operational awareness of which datacenter is serving traffic
 
-> **Production consideration:** Some organizations prefer datacenter-agnostic hostnames (e.g., `gateway1-a`, `gateway1-b`) to avoid confusion. This guide uses explicit DC identifiers for operational clarity, but either approach works as long as the GLB provides the user-facing abstraction.
+> **Production consideration:** Hostname style is an operational tradeoff.
+>
+> Some organizations prefer datacenter-agnostic hostnames (e.g., `gateway1-a`, `gateway1-b`) to avoid confusion. This guide uses explicit DC identifiers for operational clarity, but either approach works as long as the GLB provides the user-facing abstraction.
 
-> **Why HAProxy instead of pgBouncer?** AAP 2.6 has specific connection pooling requirements that make HAProxy the recommended approach for database connection routing. HAProxy routes AAP containers to the EFM-managed PostgreSQL VIP without connection pooling. See the source architecture documentation's "HAProxy vs pgBouncer Architectural Analysis" for complete design rationale.
+> **Why HAProxy instead of pgBouncer?**
+>
+> AAP 2.6 has specific connection pooling requirements that make HAProxy the recommended approach for database connection routing. HAProxy routes AAP containers to the EFM-managed PostgreSQL VIP without connection pooling. See the source architecture documentation's "HAProxy vs pgBouncer Architectural Analysis" for complete design rationale.
 
 </details>
 
@@ -800,7 +797,9 @@ eda1-dc2.example.com eda_pg_host='10.2.1.20' eda_pg_port='5432'
 eda2-dc2.example.com eda_pg_host='10.2.1.20' eda_pg_port='5432'
 ```
 
-> **Critical:** DC2 nodes will be STOPPED after installation. All admin passwords and database credentials must match between DC1 and DC2 for seamless failover.
+> **Critical:** DC2 nodes will be STOPPED after installation.
+>
+> All admin passwords and database credentials must match between DC1 and DC2 for seamless failover.
 
 #### Step 10: Install AAP on DC1 (active)
 
@@ -1098,7 +1097,9 @@ Example Route53 configuration:
 }
 ```
 
-> **Important:** DNS TTL directly impacts user-facing RTO. A 60-second TTL means clients may continue attempting to reach DC1 for up to 60 seconds after GLB has switched to DC2. For mission-critical deployments, consider 30-second TTL or client-side connection retry logic.
+> **Important:** DNS TTL directly affects client failover timing.
+>
+> A 60-second TTL means clients may continue attempting to reach DC1 for up to 60 seconds after GLB has switched to DC2. For mission-critical deployments, consider 30-second TTL or client-side connection retry logic.
 
 #### Step 15: Set up monitoring and alerting
 
@@ -1267,7 +1268,7 @@ Document actual failover times:
 | **AAP DC1** | Services running | `podman ps` shows all containers on all DC1 AAP nodes |
 | **AAP DC2** | Services stopped | `podman ps` shows no containers on DC2 AAP nodes |
 | **HAProxy** | Routing to PostgreSQL VIP | `psql -h 10.1.1.20 -U aap -d awx` connects successfully |
-| **AAP API** | Controller API responding | `curl -k https://aap.example.com/api/v2/ping/` returns 200 |
+| **AAP API** | AAP API responding | `curl -k https://aap.example.com/api/v2/ping/` returns 200 |
 | **Local Failover** | EFM promotes local standby | Stop pg-dc1-1; pg-dc1-2 becomes primary within 60s |
 | **Cross-DC Failover** | EFM promotes DC2 and starts AAP | Promote pg-dc2-1; AAP starts in DC2 within 5 minutes |
 | **GLB Routing** | Traffic redirects to DC2 | `curl https://aap.example.com` resolves to DC2 after failover |
@@ -1536,6 +1537,16 @@ By implementing this multi-datacenter Active-Passive DR architecture, you have d
 - **Extends with multi-datacenter Active-Passive DR** for mission-critical use cases
 
 This architecture ensures automation availability for workflows that cannot tolerate downtime -- network orchestration, security compliance enforcement, multi-cloud deployments, and automated incident response.
+
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first automation workflows |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design, implement, and scale your automation infrastructure |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on courses and industry-recognized certifications |
 
 ---
 

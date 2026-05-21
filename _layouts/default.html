@@ -5,6 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 {% seo %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RHMT749KVY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-RHMT749KVY');
+    </script>
+    <link rel="icon" type="image/png" href="{{ '/assets/images/favicon.png' | relative_url }}">
+    <link rel="apple-touch-icon" href="{{ '/assets/images/favicon.png' | relative_url }}">
     <script src="{{ '/assets/js/scale.fix.js' | relative_url }}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
@@ -20,6 +30,20 @@
     {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/prism-vsc-dark-plus.css' | relative_url}}">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('pre > code.language-mermaid').forEach(function (codeEl) {
+          var pre = codeEl.parentElement;
+          var div = document.createElement('div');
+          div.className = 'mermaid';
+          div.textContent = codeEl.textContent;
+          pre.parentNode.replaceChild(div, pre);
+        });
+        mermaid.run();
+      });
+    </script>
   </head>
   <body>
     <script src="{{ '/assets/prism.js' | relative_url }}"></script>
@@ -62,6 +86,12 @@
       </header>
 
       <section>
+        <div style="text-align: right; margin-bottom: 0.5rem;">
+          <a href="https://github.com/ansible-tmm/solution-guides/edit/main/{{ page.path }}"
+             target="_blank" class="edit-link">
+            <i class="fas fa-pencil-alt"></i> Edit on GitHub
+          </a>
+        </div>
         {{ content }}
       </section>
 
@@ -82,6 +112,12 @@
             <a href="https://www.ansible.com/security?hsLang=en-us" class="footer-link">Security disclosure</a>
             <span class="footer-linkSpacer">|</span>
             <a href="https://www.redhat.com/en/about/all-policies-guidelines" class="footer-link">All policies and guidelines</a>
+            <span class="footer-linkSpacer">|</span>
+            <a href="{{ '/opus-review' | relative_url }}" class="footer-link">Review</a>
+            <span class="footer-linkSpacer">|</span>
+            <a href="https://github.com/ansible-tmm/solution-guides" target="_blank" class="footer-link" title="View source on GitHub">
+              <i class="fab fa-github"></i> GitHub
+            </a>
           </div>
         </div>
       </footer>
@@ -266,7 +302,9 @@
         var easterEggImages = [
           '{{ "/assets/images/nuno-way-out.png" | relative_url }}',
           '{{ "/assets/images/roger-that.png" | relative_url }}',
-          '{{ "/assets/images/leo-sticker.png" | relative_url }}'
+          '{{ "/assets/images/leo-sticker.png" | relative_url }}',
+          '{{ "/assets/images/aubrey-sticker.png" | relative_url }}',
+          '{{ "/assets/images/alex-sticker.png" | relative_url }}'
         ];
 
         document.addEventListener('keydown', function(e) {
