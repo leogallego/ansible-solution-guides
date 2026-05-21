@@ -163,6 +163,8 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 
 ### High-Level Architecture
 
+![High-Level Active-Passive DR Architecture](assets/images/AAP_EDB-EDB_AAP.drawio.png)
+
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        GLOBAL LOAD BALANCER                            │
