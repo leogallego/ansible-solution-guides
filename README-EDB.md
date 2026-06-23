@@ -15,7 +15,7 @@ When Ansible Automation Platform becomes mission-critical infrastructure -- orch
 
 This guide demonstrates how to deploy Red Hat Ansible Automation Platform 2.6 with a **multi-datacenter Active-Passive disaster recovery architecture** using EDB Postgres Advanced Server and EDB Failover Manager (EFM). The result is a resilient automation platform capable of surviving datacenter failures with **Recovery Time Objective (RTO) under 5 minutes** and **Recovery Point Objective (RPO) under 5 seconds** -- ensuring automation continuity for mission-critical operations.
 
-**Implementation approach:** This solution leverages Red Hat's AAP 2.6 Container Enterprise Topology deployed via a **single unified installation** across both datacenters, with DC2 AAP services intentionally stopped post-installation to maintain the Active-Passive configuration. The database layer and HAProxy connection routing are **fully supported by EDB**, while the AAP platform follows Red Hat's tested enterprise topology.
+**Implementation approach:** This solution leverages Red Hat's AAP 2.6 Container Enterprise Topology deployed via a **single unified installation** across both datacenters, with DC2 AAP services intentionally stopped post-installation to maintain the Active-Passive configuration. The database layer is **fully supported by EDB**, while the AAP platform follows Red Hat's tested enterprise topology.
 
 **Business value:** Guaranteed automation availability for mission-critical workflows. Reduced risk of extended outages blocking change management, compliance enforcement, or incident response. Automated failover eliminates manual intervention during datacenter failures, reducing downtime from hours (manual DR procedures) to minutes (automated database promotion and AAP activation).
 
@@ -97,8 +97,7 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 
 **Infrastructure:**
 
-- **HAProxy** -- database connection routing from AAP services to PostgreSQL VIP
-- **Global Load Balancer** -- F5, HAProxy, or Route53 with health-check-based routing to active datacenter
+- **Global Load Balancer** -- F5, AWS Route53, or Azure Traffic Manager with health-check-based routing to active datacenter
 - **Site-to-site VPN or Direct Connect** -- low-latency WAN connectivity between datacenters (< 100ms latency required)
 
 ### Who Benefits
@@ -134,7 +133,7 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 |--------|----------|----------|
 | EDB Postgres Advanced Server | Yes | EDB subscription or trial license |
 | EDB Failover Manager (EFM) | Yes | Bundled with EDB Postgres Advanced Server |
-| Global Load Balancer | Yes | F5 BIG-IP, HAProxy, AWS Route53, Azure Traffic Manager |
+| Global Load Balancer | Yes | F5 BIG-IP, AWS Route53, Azure Traffic Manager |
 | WAL Archive Storage | Yes | S3, Azure Blob, NFS |
 | Site-to-site connectivity | Yes | VPN or Direct Connect with < 100ms latency |
 
@@ -144,11 +143,11 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 
 **Total Resource Footprint:**
 
-- **26 VMs** total (13 per datacenter)
+- **24 VMs** total (12 per datacenter)
   - 8 AAP component VMs per DC (2 gateway, 2 controller, 2 hub, 2 EDA)
   - 3 PostgreSQL VMs per DC
-  - 1 HAProxy + 1 Barman per DC
-- **68 vCPU, 272GB RAM per datacenter**
+  - 1 Barman per DC
+- **66 vCPU, 264GB RAM per datacenter**
 - **500GB SSD per PostgreSQL node** (3000 IOPS minimum)
 - **WAN bandwidth:** 100 Mbps minimum, 1 Gbps recommended for replication
 
@@ -170,7 +169,7 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        GLOBAL LOAD BALANCER                            │
-│                      (F5 / HAProxy / Route53)                          │
+│                      (F5 / Route53 / Azure TM)                         │
 │                    https://aap.example.com                             │
 │                                                                        │
 │  Health Checks: /api/v2/ping/ every 10s                                │
@@ -200,13 +199,9 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 │  │  eda1-dc1                │  │   │  │  eda1-dc2                │   │
 │  │  eda2-dc1                │  │   │  │  eda2-dc2                │   │
 │  │    + Redis colocated     │  │   │  │    + Redis (stopped)     │   │
-│  └──────────────────────────┘  │   │  └──────────────────────────┘   │
-│  ┌───────────────────────────┐ │   │  ┌───────────────────────────┐  │
-│  │  HAProxy Load Balancer    │ │   │  │  HAProxy Load Balancer    │  │
-│  │  vip-dc1.example.com      │ │   │  │  vip-dc2.example.com      │  │
-│  └────────┬──────────────────┘ │   │  └────────┬──────────────────┘  │
-│           │                    │   │           │                     │         
-│  ┌────────▼───────────────────┐│   │  ┌────────▼───────────────────┐ │
+│  └──────────┬───────────────┘  │   │  └──────────┬───────────────┘   │
+│             │                  │   │             │                   │         
+│  ┌──────────▼─────────────────┐│   │  ┌──────────▼─────────────────┐ │
 │  │ PostgreSQL Cluster (3)     ││   │  │ PostgreSQL Cluster (3)     │ │
 │  │ (EDB Postgres Advanced 16) ││   │  │ (EDB Postgres Advanced 16) │ │
 │  │                            ││   │  │                            │ │
@@ -238,7 +233,7 @@ EDB is a trusted PostgreSQL partner with deep integration into Red Hat's ecosyst
 
 ```mermaid
 flowchart LR
-    User --> GLB["Global LB"] --> HAProxy["HAProxy\n(DC1)"] --> AAP["AAP\n(DC1)"] --> VIP["VIP\n(DC1)"] --> PG1["PostgreSQL\nPRIMARY (DC1)"]
+    User --> GLB["Global LB"] --> AAP["AAP\n(DC1)"] --> VIP["VIP\n(DC1)"] --> PG1["PostgreSQL\nPRIMARY (DC1)"]
 
     PG1 --> PG1S2["PG Standby\nDC1-2"]
     PG1 --> PG1S3["PG Standby\nDC1-3"]
@@ -285,7 +280,7 @@ sequenceDiagram
 
 ### Component Specifications
 
-**Quick reference:** 26 VMs total (13 per datacenter), 68 vCPU / 272GB RAM per datacenter
+**Quick reference:** 24 VMs total (12 per datacenter), 66 vCPU / 264GB RAM per datacenter
 
 <details markdown="1">
 <summary><strong>View detailed component specifications →</strong></summary>
@@ -298,8 +293,7 @@ sequenceDiagram
 | **Automation Controller** | RHEL 9.4+, Podman | 2 | 4 vCPU, 16GB RAM, 60GB disk | 8 vCPU, 32GB RAM |
 | **Automation Hub** | RHEL 9.4+, Podman + Redis | 2 | 4 vCPU, 16GB RAM, 60GB disk | 8 vCPU, 32GB RAM |
 | **Event-Driven Ansible** | RHEL 9.4+, Podman + Redis | 2 | 4 vCPU, 16GB RAM, 60GB disk | 8 vCPU, 32GB RAM |
-| **HAProxy DB Router** | RHEL 9.4+, HAProxy | 1 | 2 vCPU, 8GB RAM, 40GB disk | 2 vCPU, 8GB RAM |
-| **Total AAP Infrastructure** | - | **9 VMs** | - | **34 vCPU, 136GB RAM** |
+| **Total AAP Infrastructure** | - | **8 VMs** | - | **32 vCPU, 128GB RAM** |
 
 #### PostgreSQL Database Cluster (Per Datacenter)
 
@@ -338,7 +332,6 @@ DC1 Network:
     - controller1-dc1:  10.1.1.13    controller2-dc1:  10.1.1.14
     - hub1-dc1:         10.1.1.15    hub2-dc1:         10.1.1.16
     - eda1-dc1:         10.1.1.17    eda2-dc1:         10.1.1.18
-    - haproxy-db-dc1:   10.1.1.20
 
   - Database Subnet:  10.1.2.0/24
     - pg-dc1-1:         10.1.2.21    pg-dc1-2:         10.1.2.22
@@ -351,7 +344,6 @@ DC2 Network:
     - controller1-dc2:  10.2.1.13    controller2-dc2:  10.2.1.14
     - hub1-dc2:         10.2.1.15    hub2-dc2:         10.2.1.16
     - eda1-dc2:         10.2.1.17    eda2-dc2:         10.2.1.18
-    - haproxy-db-dc2:   10.2.1.20
 
   - Database Subnet:  10.2.2.0/24
     - pg-dc2-1:         10.2.2.21    pg-dc2-2:         10.2.2.22
@@ -370,16 +362,16 @@ WAN Connectivity:
 - **DC-specific hostnames are intentional:** Hostnames like `gateway1-dc1` and `pg-dc2-1` explicitly identify which datacenter hosts each VM
 - **User-facing endpoint is datacenter-agnostic:** Users access `https://aap.example.com` (GLB manages routing)
 - **During failover, DC2 hostnames remain unchanged:** When DC2 becomes active, nodes retain their `-dc2` suffix -- this is expected and correct
-- **Internal references use VIPs or HAProxy:** AAP components connect to database via HAProxy (`10.1.1.20` or `10.2.1.20`), which routes to the datacenter-local PostgreSQL VIP
+- **Internal references use VIPs:** AAP components connect directly to the datacenter-local PostgreSQL VIP (`10.1.2.100` or `10.2.2.100`)
 - **Why not use datacenter-agnostic names?** Explicit DC identifiers in hostnames aid troubleshooting, capacity planning, and operational awareness of which datacenter is serving traffic
 
 > **Production consideration:** Hostname style is an operational tradeoff.
 >
 > Some organizations prefer datacenter-agnostic hostnames (e.g., `gateway1-a`, `gateway1-b`) to avoid confusion. This guide uses explicit DC identifiers for operational clarity, but either approach works as long as the GLB provides the user-facing abstraction.
 
-> **Why HAProxy instead of pgBouncer?**
+> **Why not pgBouncer for connection pooling?**
 >
-> AAP 2.6 has specific connection pooling requirements that make HAProxy the recommended approach for database connection routing. HAProxy routes AAP containers to the EFM-managed PostgreSQL VIP without connection pooling. See the source architecture documentation's "HAProxy vs pgBouncer Architectural Analysis" for complete design rationale.
+> AAP 2.6 has specific connection pooling requirements that make direct connections to the PostgreSQL VIP the recommended approach. pgBouncer's transaction-level pooling can interfere with AAP's connection state management, particularly for long-running automation jobs and EDA rulebook activations. Direct connections to the EFM-managed VIP ensure full connection lifecycle control while maintaining automatic failover capability.
 
 </details>
 
@@ -395,9 +387,9 @@ WAN Connectivity:
 
 **Tasks:**
 
-1. Provision VMs (26 total)
-   - DC1: 8 AAP VMs + 3 PostgreSQL + 1 HAProxy + 1 Barman
-   - DC2: 8 AAP VMs + 3 PostgreSQL + 1 HAProxy + 1 Barman
+1. Provision VMs (24 total)
+   - DC1: 8 AAP VMs + 3 PostgreSQL + 1 Barman
+   - DC2: 8 AAP VMs + 3 PostgreSQL + 1 Barman
 2. Install RHEL 9.4+ on all nodes
 3. Configure network (VLANs, firewall rules, VPN between DCs)
 4. Install Podman on AAP component VMs
@@ -406,32 +398,22 @@ WAN Connectivity:
 **Network firewall rules required:**
 
 ```bash
-# User Access (GLB → HAProxy)
+# User Access (GLB → Platform Gateway)
 Source: 0.0.0.0/0
-Dest: 10.1.1.100, 10.2.1.100
-Port: 443/tcp
-
-# HAProxy → Platform Gateway
-Source: 10.1.1.10, 10.2.1.10
 Dest: 10.1.1.11-12, 10.2.1.11-12
-Port: 80/443
+Port: 443/tcp
 
 # Platform Gateway → AAP Components
 Source: 10.1.1.11-12, 10.2.1.11-12
 Dest: 10.1.1.13-18, 10.2.1.13-18
 Port: 8080/8443 (Controller), 8081/8444 (Hub), 8082/8445 (EDA)
 
-# AAP Components → PostgreSQL (via HAProxy)
+# AAP Components → PostgreSQL VIP
 Source: 10.1.1.0/24, 10.2.1.0/24
-Dest: 10.1.1.20, 10.2.1.20
-Port: 5432/tcp
-
-# HAProxy → PostgreSQL VIP
-Source: 10.1.1.20, 10.2.1.20
 Dest: 10.1.2.100, 10.2.2.100
 Port: 5432/tcp
 
-# PostgreSQL Replication (DC1 → DC2)
+# PostgreSQL Replication (DC1 ↔ DC2)
 Source: 10.1.2.21-23
 Dest: 10.2.2.21-23
 Port: 5432/tcp
@@ -769,32 +751,32 @@ eda_pg_database='automationedacontroller'
 eda_pg_username='aap'
 eda_pg_password='<set your own>'
 
-# DC1-specific host variables (pointing to DC1 HAProxy)
+# DC1-specific host variables (pointing to DC1 PostgreSQL VIP)
 [automationgateway:vars]
-gateway1-dc1.example.com gateway_pg_host='10.1.1.20' gateway_pg_port='5432'
-gateway2-dc1.example.com gateway_pg_host='10.1.1.20' gateway_pg_port='5432'
+gateway1-dc1.example.com gateway_pg_host='10.1.2.100' gateway_pg_port='5432'
+gateway2-dc1.example.com gateway_pg_host='10.1.2.100' gateway_pg_port='5432'
 
 [automationcontroller:vars]
-controller1-dc1.example.com controller_pg_host='10.1.1.20' controller_pg_port='5432'
-controller2-dc1.example.com controller_pg_host='10.1.1.20' controller_pg_port='5432'
+controller1-dc1.example.com controller_pg_host='10.1.2.100' controller_pg_port='5432'
+controller2-dc1.example.com controller_pg_host='10.1.2.100' controller_pg_port='5432'
 
 [automationhub:vars]
-hub1-dc1.example.com hub_pg_host='10.1.1.20' hub_pg_port='5432'
-hub2-dc1.example.com hub_pg_host='10.1.1.20' hub_pg_port='5432'
+hub1-dc1.example.com hub_pg_host='10.1.2.100' hub_pg_port='5432'
+hub2-dc1.example.com hub_pg_host='10.1.2.100' hub_pg_port='5432'
 
 [automationeda:vars]
-eda1-dc1.example.com eda_pg_host='10.1.1.20' eda_pg_port='5432'
-eda2-dc1.example.com eda_pg_host='10.1.1.20' eda_pg_port='5432'
+eda1-dc1.example.com eda_pg_host='10.1.2.100' eda_pg_port='5432'
+eda2-dc1.example.com eda_pg_host='10.1.2.100' eda_pg_port='5432'
 
-# DC2-specific host variables (pointing to DC2 HAProxy)
-gateway1-dc2.example.com gateway_pg_host='10.2.1.20' gateway_pg_port='5432'
-gateway2-dc2.example.com gateway_pg_host='10.2.1.20' gateway_pg_port='5432'
-controller1-dc2.example.com controller_pg_host='10.2.1.20' controller_pg_port='5432'
-controller2-dc2.example.com controller_pg_host='10.2.1.20' controller_pg_port='5432'
-hub1-dc2.example.com hub_pg_host='10.2.1.20' hub_pg_port='5432'
-hub2-dc2.example.com hub_pg_host='10.2.1.20' hub_pg_port='5432'
-eda1-dc2.example.com eda_pg_host='10.2.1.20' eda_pg_port='5432'
-eda2-dc2.example.com eda_pg_host='10.2.1.20' eda_pg_port='5432'
+# DC2-specific host variables (pointing to DC2 PostgreSQL VIP)
+gateway1-dc2.example.com gateway_pg_host='10.2.2.100' gateway_pg_port='5432'
+gateway2-dc2.example.com gateway_pg_host='10.2.2.100' gateway_pg_port='5432'
+controller1-dc2.example.com controller_pg_host='10.2.2.100' controller_pg_port='5432'
+controller2-dc2.example.com controller_pg_host='10.2.2.100' controller_pg_port='5432'
+hub1-dc2.example.com hub_pg_host='10.2.2.100' hub_pg_port='5432'
+hub2-dc2.example.com hub_pg_host='10.2.2.100' hub_pg_port='5432'
+eda1-dc2.example.com eda_pg_host='10.2.2.100' eda_pg_port='5432'
+eda2-dc2.example.com eda_pg_host='10.2.2.100' eda_pg_port='5432'
 ```
 
 > **Critical:** DC2 nodes will be STOPPED after installation.
@@ -835,109 +817,19 @@ systemctl disable automation-controller-web automation-controller-task
 systemctl disable automation-gateway automation-hub eda-activation-worker redis
 ```
 
-#### Step 12: Configure HAProxy for database connection routing
-
-**/etc/haproxy/haproxy.cfg (DC1 and DC2):**
-
-```haproxy
-global
-    log /dev/log local0 info
-    chroot /var/lib/haproxy
-    stats socket /var/lib/haproxy/stats mode 600 level admin
-    stats timeout 30s
-    user haproxy
-    group haproxy
-    daemon
-    maxconn 4000
-
-defaults
-    log     global
-    mode    tcp
-    option  tcplog
-    option  dontlognull
-    timeout connect 10s
-    timeout client  1h
-    timeout server  1h
-    timeout check   5s
-    retries 3
-
-# Backend - PostgreSQL VIP (EFM-managed)
-backend postgresql_backend
-    mode tcp
-    balance roundrobin
-    
-    # External health check validates writable node
-    option external-check
-    external-check path "/usr/bin:/bin"
-    external-check command /usr/local/bin/check-postgres-writable.sh
-    
-    # Single backend: EFM-managed VIP always points to PRIMARY
-    server postgresql-vip 10.1.2.100:5432 check inter 5s rise 2 fall 3 maxconn 500
-
-# Frontend - AAP Database Connections
-frontend postgresql_frontend
-    bind *:5432
-    mode tcp
-    default_backend postgresql_backend
-
-# Stats interface
-listen stats
-    bind *:8404
-    mode http
-    stats enable
-    stats uri /stats
-    stats refresh 10s
-    stats auth admin:ChangeMeStats123!
-```
-
-**External health check script:**
+#### Step 12: Verify AAP database connectivity to PostgreSQL VIP
 
 ```bash
-#!/bin/bash
-# /usr/local/bin/check-postgres-writable.sh
+# From each AAP node, verify connectivity to local datacenter VIP
+# DC1 nodes:
+psql -h 10.1.2.100 -U aap -d awx -c "SELECT version();"
 
-PGHOST="${1:-10.1.2.100}"
-PGPORT="${2:-5432}"
-PGUSER="haproxy_healthcheck"
-PGDATABASE="postgres"
-TIMEOUT=3
+# DC2 nodes:
+psql -h 10.2.2.100 -U aap -d awx -c "SELECT version();"
 
-# Check 1: PostgreSQL is reachable
-if ! timeout "${TIMEOUT}" pg_isready -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" -q; then
-    logger -t haproxy-healthcheck "PostgreSQL unreachable: ${PGHOST}:${PGPORT}"
-    exit 1
-fi
-
-# Check 2: PostgreSQL is NOT in recovery (writable PRIMARY)
-IS_RECOVERY=$(timeout "${TIMEOUT}" psql \
-    -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" -d "${PGDATABASE}" \
-    -t -c "SELECT pg_is_in_recovery();" 2>/dev/null | tr -d '[:space:]')
-
-if [[ "${IS_RECOVERY}" == "f" ]]; then
-    exit 0  # Writable PRIMARY
-else
-    logger -t haproxy-healthcheck "PostgreSQL is read-only: ${PGHOST}:${PGPORT}"
-    exit 1  # Read-only STANDBY
-fi
-```
-
-Create health check user:
-
-```sql
--- On primary database
-CREATE USER haproxy_healthcheck WITH PASSWORD 'HealthCheckPassword123!';
-GRANT CONNECT ON DATABASE postgres TO haproxy_healthcheck;
-
--- Add to pg_hba.conf
-# TYPE  DATABASE        USER                    ADDRESS         METHOD
-host    postgres        haproxy_healthcheck     10.1.1.0/24     scram-sha-256
-host    postgres        haproxy_healthcheck     10.2.1.0/24     scram-sha-256
-```
-
-Start HAProxy:
-
-```bash
-sudo systemctl enable --now haproxy
+# Verify VIP points to primary node
+psql -h 10.1.2.100 -U postgres -c "SELECT pg_is_in_recovery();"
+# Expected: f (false - this is the primary)
 ```
 
 </details>
@@ -1260,7 +1152,7 @@ Document actual failover times:
 | **VIP** | Virtual IP assigned to primary | `ping 10.1.2.100` resolves to pg-dc1-1 |
 | **AAP DC1** | Services running | `podman ps` shows all containers on all DC1 AAP nodes |
 | **AAP DC2** | Services stopped | `podman ps` shows no containers on DC2 AAP nodes |
-| **HAProxy** | Routing to PostgreSQL VIP | `psql -h 10.1.1.20 -U aap -d awx` connects successfully |
+| **Database Connectivity** | AAP can reach PostgreSQL VIP | `psql -h 10.1.2.100 -U aap -d awx` connects successfully |
 | **AAP API** | AAP API responding | `curl -k https://aap.example.com/api/v2/ping/` returns 200 |
 | **Local Failover** | EFM promotes local standby | Stop pg-dc1-1; pg-dc1-2 becomes primary within 60s |
 | **Cross-DC Failover** | EFM promotes DC2 and starts AAP | Promote pg-dc2-1; AAP starts in DC2 within 5 minutes |
@@ -1388,8 +1280,7 @@ curl -k https://aap.example.com/api/v2/ping/
 |---------|-------------|-----|
 | Replication lag increasing | WAN bandwidth saturated or high latency | Verify network connectivity; check `pg_stat_replication` for `write_lag`, `flush_lag`, `replay_lag` |
 | EFM failover does not trigger | `auto.failover=false` or insufficient quorum | Verify EFM properties; ensure majority of nodes can communicate |
-| AAP containers fail to start in DC2 | Database not ready or incorrect connection string | Verify PostgreSQL VIP is accessible from AAP nodes; check HAProxy backend status |
-| HAProxy health check fails | Database in recovery mode (read-only) | Verify `pg_is_in_recovery()` returns `f`; check EFM VIP assignment |
+| AAP containers fail to start in DC2 | Database not ready or incorrect connection string | Verify PostgreSQL VIP is accessible from AAP nodes; test with `psql -h 10.2.2.100 -U aap -d awx` |
 | Cross-DC replication stopped | Replication slot removed or network partition | Recreate replication slot; verify VPN/Direct Connect connectivity |
 | Post-promotion script timeout | SSH keys not configured or AAP startup slow | Verify passwordless SSH from PostgreSQL nodes to AAP nodes; increase `script.timeout` in EFM properties |
 
@@ -1524,8 +1415,8 @@ By implementing this multi-datacenter Active-Passive DR architecture, you have d
 
 **Infrastructure scale:**
 
-- **26 VMs total** (13 per datacenter)
-- **68 vCPU, 272GB RAM per datacenter**
+- **24 VMs total** (12 per datacenter)
+- **66 vCPU, 264GB RAM per datacenter**
 - **Conforms to Red Hat AAP 2.6 Container Enterprise Topology** for single-datacenter design
 - **Extends with multi-datacenter Active-Passive DR** for mission-critical use cases
 
