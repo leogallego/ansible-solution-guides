@@ -26,9 +26,9 @@ This guide automates both the execution and the judgment. Event-Driven Ansible d
 - [Solution Walkthrough](#solution-walkthrough)
   - [Step 1: Set up the EDA rulebook](#step-1-set-up-the-eda-rulebook)
   - [Step 2: AI risk analysis and decision routing](#step-2-ai-risk-analysis-and-decision-routing)
-  - [Step 3: Rotate the certificate (PROCEED path)](#step-3-rotate-the-certificate-proceed-path)
-  - [Step 4: Schedule for maintenance window (SCHEDULE path)](#step-4-schedule-for-maintenance-window-schedule-path)
-  - [Step 5: Resolve in ITSM](#step-5-resolve-in-itsm)
+  - [Step 3a: Rotate the certificate (PROCEED path)](#step-3a-rotate-the-certificate-proceed-path)
+  - [Step 3b: Schedule for maintenance window (SCHEDULE path)](#step-3b-schedule-for-maintenance-window-schedule-path)
+  - [Step 4: Resolve in ITSM](#step-4-resolve-in-itsm)
 - [Validation](#validation)
 - [Maturity Path](#maturity-path)
 - [Related Guides](#related-guides)
@@ -116,9 +116,9 @@ Certificate monitoring that can send webhook alerts when certificates are approa
 |-------|--------|-----|
 | **EDA rulebook activation** (Step 1) | None | Listens for webhook events, no system changes |
 | **AI risk analysis** (Step 2) | Low | Creates an ITSM incident and triggers downstream jobs, but no direct infrastructure changes |
-| **Certificate rotation** (Step 3) | Medium | Rebinds IIS HTTPS binding; causes brief HTTPS interruption (< 60s) |
-| **Maintenance window scheduling** (Step 4) | None | Creates a one-time schedule in AAP, no immediate system changes |
-| **ITSM resolution** (Step 5) | None | Updates incident record via API |
+| **Certificate rotation** (Step 3a) | Medium | Rebinds IIS HTTPS binding; causes brief HTTPS interruption (< 60s) |
+| **Maintenance window scheduling** (Step 3b) | None | Creates a one-time schedule in AAP, no immediate system changes |
+| **ITSM resolution** (Step 4) | None | Updates incident record via API |
 
 ---
 
@@ -325,7 +325,7 @@ After receiving the AI decision, the playbook creates an ITSM incident with the 
 
 ![ITSM incident with AI assessment](assets/images/itsm-incident-ai-assessment.png)
 
-### Step 3: Rotate the certificate (PROCEED path)
+### Step 3a: Rotate the certificate (PROCEED path)
 
 **Operational Impact:** Medium (brief HTTPS interruption, under 60 seconds)
 
@@ -393,7 +393,7 @@ The playbook expects a valid replacement certificate to already exist in the Win
 
 ![Windows certificate store before and after rotation](assets/images/mmc-cert-store.png)
 
-### Step 4: Schedule for maintenance window (SCHEDULE path)
+### Step 3b: Schedule for maintenance window (SCHEDULE path)
 
 **Operational Impact:** None (creates a schedule, no immediate system changes)
 
@@ -442,7 +442,9 @@ The AI may choose SCHEDULE over PROCEED for several reasons: the current time fa
 
 The playbook also updates the ITSM incident with the schedule details so the ticket shows when the rotation will happen and why it was scheduled for later.
 
-### Step 5: Resolve in ITSM
+![ITSM incident with schedule details](assets/images/SNOWSchedule.png)
+
+### Step 4: Resolve in ITSM
 
 **Operational Impact:** None (API call)
 
@@ -470,7 +472,7 @@ After the rotation playbook completes successfully, it resolves the ITSM inciden
   when: snow_incident_sys_id | default('') | length > 0
 ```
 
-The ITSM incident now has the full story: the AI risk assessment from Step 2 (as the initial description and work notes), and the rotation results from Step 3 (as the close notes). This provides a complete audit trail from detection through resolution.
+The ITSM incident now has the full story: the AI risk assessment from Step 2 (as the initial description and work notes), and the rotation results from Step 3a (as the close notes). This provides a complete audit trail from detection through resolution.
 
 ![Resolved ITSM incident](assets/images/itsm-incident-resolved.png)
 
