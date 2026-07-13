@@ -21,8 +21,7 @@ Traditional network security relies on perimeter defenses, but modern threats re
   - [Use Case 2: Just-In-Time Credential Management](#use-case-2-just-in-time-credential-management)
   - [Use Case 3: Platform-Level Policy Enforcement](#use-case-3-platform-level-policy-enforcement)
   - [Use Case 4: Workload Identity Verification for Network Operations](#use-case-4-workload-identity-verification-for-network-operations)
-  - [Use Case 5: Event-Driven Security Response](#use-case-5-event-driven-security-response)
-  - [Use Case 6: Defense-in-Depth Access Control](#use-case-6-defense-in-depth-access-control)
+  - [Use Case 5: Defense-in-Depth Access Control](#use-case-5-defense-in-depth-access-control)
 - [Validation](#validation)
 - [Maturity Path](#maturity-path)
 - [Related Guides](#related-guides)
@@ -56,37 +55,31 @@ Traditional approaches require teams to manually coordinate identity (LDAP/AD), 
 
 ## Solution
 
-This solution demonstrates an end-to-end Zero Trust Architecture using Ansible Automation Platform to orchestrate identity, secrets, policy, network controls, and automated incident response.
+This solution demonstrates an end-to-end Zero Trust Architecture using Ansible Automation Platform to orchestrate identity, secrets, policy, and network controls.
 
 **What makes up the solution?**
 
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f501.png" width="20" style="vertical-align:text-bottom;"> **Red Hat Ansible Automation Platform (AAP)** — Central orchestration layer and policy enforcement point <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> **Event-Driven Ansible (EDA)** — Automated incident response triggered by security events <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f194.png" width="20" style="vertical-align:text-bottom;"> **Red Hat Identity Management (IdM/FreeIPA)** — Identity provider, LDAP, Kerberos, CA, DNS <a target="_blank" href="https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f511.png" width="20" style="vertical-align:text-bottom;"> **HashiCorp Vault** — Secrets management, dynamic credentials, SSH certificate authority <a target="_blank" href="https://www.vaultproject.io/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6e1.png" width="20" style="vertical-align:text-bottom;"> **Open Policy Agent (OPA)** — Policy-based authorization with deny-by-default <a target="_blank" href="https://www.openpolicyagent.org/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4dc.png" width="20" style="vertical-align:text-bottom;"> **SPIFFE/SPIRE** — Workload identity and cryptographic attestation <a target="_blank" href="https://spiffe.io/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png" width="20" style="vertical-align:text-bottom;"> **Netbox** — Configuration management database (CMDB) as source of truth <a target="_blank" href="https://netbox.dev/">[Link]</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f50d.png" width="20" style="vertical-align:text-bottom;"> **SIEM** — Log aggregation and security analytics (Splunk, Elastic, QRadar, Wazuh) <a target="_blank" href="https://www.splunk.com/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f310.png" width="20" style="vertical-align:text-bottom;"> **Arista cEOS** — Network fabric with VLAN isolation and ACLs <a target="_blank" href="https://www.arista.com/">[Link]</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4bb.png" width="20" style="vertical-align:text-bottom;"> **Gitea** — Git server for GitOps workflows <a target="_blank" href="https://gitea.io/">[Link]</a>
-
-> **EDA is part of Ansible Automation Platform.**
->
-> Event-Driven Ansible uses rulebooks to monitor security events from SIEM, policy violations, or infrastructure changes, then automatically triggers AAP job templates for remediation. Think of it as automatic security response -- EDA is the input (event detection), AAP Controller is the output (executing remediation).
 
 ### Who Benefits
 
 | Persona | Challenge | What They Gain |
 |---------|-----------|---------------|
-| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f512.png" width="20" style="vertical-align:text-bottom;"> **Security Architect** | Manually orchestrating identity, secrets, policy, and network controls across siloed tools | Reference architecture showing how AAP unifies Zero Trust components with automated policy enforcement and incident response |
+| <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f512.png" width="20" style="vertical-align:text-bottom;"> **Security Architect** | Manually orchestrating identity, secrets, policy, and network controls across siloed tools | Reference architecture showing how AAP unifies Zero Trust components with automated policy enforcement |
 | <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6e0.png" width="20" style="vertical-align:text-bottom;"> **IT Operations / SRE** | Credential sprawl, standing access, and manual secret rotation create security risk and operational toil | Executable playbooks for dynamic credentials, short-lived certificates, and automated credential revocation that eliminate standing secrets |
 | <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" width="20" style="vertical-align:text-bottom;"> **Compliance / Audit** | Proving continuous compliance requires manual evidence collection across disconnected systems | Unified audit trail capturing OPA policy decisions, Vault credential lifecycle, IdM authentication, and network changes with full traceability |
 | <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f310.png" width="20" style="vertical-align:text-bottom;"> **Platform Engineer** | Network segmentation requires manual firewall rules and switch ACL changes prone to drift | Automated micro-segmentation with policy-driven VLAN management, firewall rules, and ACL enforcement validated against CMDB |
 
 **Recommended Demos and Self-Paced Labs:**
 
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3a5.png" width="20" style="vertical-align:text-bottom;"> [Zero Trust Workshop (GitHub)](https://github.com/nmartins0611/zta-workshop-aap) -- Complete hands-on lab with all six use cases
+- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3a5.png" width="20" style="vertical-align:text-bottom;"> [Zero Trust Workshop (GitHub)](https://github.com/nmartins0611/zta-workshop-aap) -- Complete hands-on lab with all five use cases
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f680.png" width="20" style="vertical-align:text-bottom;"> [Ansible Automation Platform Product Tour](https://www.redhat.com/en/technologies/management/ansible/try-it) -- Interactive platform walkthrough
 
 **Source Code:**
@@ -99,8 +92,7 @@ This solution demonstrates an end-to-end Zero Trust Architecture using Ansible A
 
 ### Ansible Automation Platform
 
-- **Ansible Automation Platform 2.6+** — Required for Event-Driven Ansible controller and Policy as Code features
-- **Event-Driven Ansible controller** — For automated incident response workflows
+- **Ansible Automation Platform 2.6+** — Required for Policy as Code features
 - **AAP Policy as Code (OPA Gateway)** — Platform-level policy enforcement
 
 ### Featured Ansible Content Collections
@@ -112,7 +104,6 @@ This solution demonstrates an end-to-end Zero Trust Architecture using Ansible A
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/community/hashi_vault/">community.hashi_vault</a> | Validated | Vault integration, secrets lookups, SSH CA |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/netbox/netbox/">netbox.netbox</a> | Validated | CMDB inventory source, DCIM operations |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/arista/eos/">arista.eos</a> | Certified | Arista cEOS switch configuration, VLAN management |
-| <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/eda/">ansible.eda</a> | Certified | EDA event sources -- webhook plugin for SIEM alerts |
 | <a target="_blank" href="https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/">ansible.controller</a> | Certified | Automation Controller configuration as code |
 
 ### External Systems
@@ -123,7 +114,7 @@ This solution demonstrates an end-to-end Zero Trust Architecture using Ansible A
 | Secrets Manager | Yes | Dynamic credentials and SSH certificate authority | HashiCorp Vault, CyberArk |
 | Policy Engine | Yes | Deny-by-default authorization decisions | Open Policy Agent (OPA) |
 | CMDB | Yes | Infrastructure source of truth | Netbox, ServiceNow CMDB |
-| SIEM / Log Analytics | Yes | Security event detection and correlation | Splunk, Elastic Stack, IBM QRadar, Wazuh |
+| SIEM / Log Analytics | Optional | Bypass detection and audit correlation in defense-in-depth scenarios | Splunk, Elastic Stack, IBM QRadar, Wazuh |
 | Network Infrastructure | Yes | Micro-segmentation and traffic control | Arista cEOS, Cisco, Juniper |
 | Workload Identity | Optional but recommended | Cryptographic workload attestation | SPIFFE/SPIRE |
 | Git Server | Optional | GitOps workflow triggers | Gitea, GitHub, GitLab |
@@ -131,7 +122,7 @@ This solution demonstrates an end-to-end Zero Trust Architecture using Ansible A
 ### Infrastructure Requirements
 
 - **RHEL 9.x** hosts for all components
-- **Podman** for containerized services (SPIRE, OPA, SIEM components, application containers)
+- **Podman** for containerized services (SPIRE, OPA, application containers)
 - **Network:** Management network (192.168.1.0/24) plus internal Podman networks for application tiers
 - **DNS:** All hostnames must resolve via IdM DNS (zta.lab domain)
 - **Certificate Trust:** All hosts enrolled in IdM domain for CA trust
@@ -144,73 +135,15 @@ This solution demonstrates an end-to-end Zero Trust Architecture using Ansible A
 | Use Case 2 (Credential Management) | **Medium** | Reversible (credentials auto-expire) |
 | Use Case 3 (Policy Enforcement) | **High** | Configuration changes require testing |
 | Use Case 4 (Network Operations) | **High** | Network changes, test in non-production first |
-| Use Case 5 (Security Response) | **Low** | Automated revocation is reversible |
-| Use Case 6 (Access Control) | **High** | Requires break-glass access path |
+| Use Case 5 (Access Control) | **High** | Requires break-glass access path |
 
-**Warning:** Use Cases 3, 4, and 6 make configuration changes to SSH, network, and access controls. Test in a non-production environment first and ensure break-glass access is validated before applying to production systems.
+**Warning:** Use Cases 3, 4, and 5 make configuration changes to SSH, network, and access controls. Test in a non-production environment first and ensure break-glass access is validated before applying to production systems.
 
 ---
 
 ## Zero Trust Architecture Workflow
 
-The solution implements defense-in-depth with multiple policy enforcement rings:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     User / Event Trigger                         │
-└────────────────────────────┬────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               OUTER RING — AAP Policy as Code                    │
-│                                                                  │
-│  AAP Controller → OPA Gateway → aap.gateway policy               │
-│  Decision: Can this user launch this template?                   │
-│  • Template name pattern matching                                │
-│  • IdM group membership via LDAP                                 │
-│  • Deny-by-default                                               │
-└────────────────────────────┬────────────────────────────────────┘
-                             │ (ALLOWED)
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              Playbook Execution — Runtime Context                │
-│                                                                  │
-│  1. Fetch short-lived credentials from Vault                     │
-│     • Dynamic database credentials (5-minute TTL)                │
-│     • SSH certificates signed by Vault CA (30-minute TTL)        │
-│                                                                  │
-│  2. INNER RING — In-playbook OPA policy check                    │
-│     • Verify SPIFFE workload identity (cryptographic proof)      │
-│     • Validate user group membership (IdM)                       │
-│     • Check parameter constraints (VLAN ranges, actions)         │
-│                                                                  │
-│  3. Execute infrastructure changes                               │
-│     • Network VLAN creation on Arista fabric                     │
-│     • Firewall rules and ACL micro-segmentation                  │
-│     • Application deployment with ephemeral credentials          │
-│     • Security patching with hardening policies                  │
-│                                                                  │
-│  4. Update CMDB with audit trail                                 │
-│     • Record user + workload SPIFFE ID in Netbox                 │
-│     • Vault credential lifecycle logged to Splunk                │
-└────────────────────────────┬────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│            Continuous Monitoring & Incident Response             │
-│                                                                  │
-│  SIEM → Detects brute-force attack                               │
-│       │                                                          │
-│       ▼                                                          │
-│  Event-Driven Ansible → Matches rulebook condition              │
-│       │                                                          │
-│       ▼                                                          │
-│  AAP Job Triggered → Revoke Vault credentials                   │
-│       │                                                          │
-│       ▼                                                          │
-│  Application isolated (< 30 seconds from detection to response) │
-└─────────────────────────────────────────────────────────────────┘
-```
+The solution implements defense-in-depth with multiple policy enforcement rings.
 
 ### Key Workflow Patterns
 
@@ -223,10 +156,7 @@ No standing access. Credentials are generated on-demand from Vault, used once, a
 **Pattern 3: Workload Identity Verification**  
 SPIFFE/SPIRE provides cryptographic proof that the automation platform is legitimate, preventing rogue scripts from impersonating AAP.
 
-**Pattern 4: Automated Incident Response**  
-Security events (brute-force attacks, policy violations) trigger automated remediation via Event-Driven Ansible with no human in the loop.
-
-**Pattern 5: Defense-in-Depth Lockdown**  
+**Pattern 4: Defense-in-Depth Lockdown**  
 Four independent layers (firewall, HBAC, Vault policy, SIEM monitoring) must all be bypassed to compromise a host, with break-glass recovery tested and validated.
 
 <h2 id="use-cases"></h2>
@@ -244,28 +174,6 @@ Four independent layers (firewall, HBAC, Vault policy, SIEM monitoring) must all
 **What This Use Case Demonstrates:**
 
 This use case establishes the foundation by verifying that Ansible Automation Platform can successfully integrate with all Zero Trust components. All credentials are pre-configured via automation, and you verify the integrations work correctly.
-
-**Architecture Diagram:**
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│               Ansible Automation Platform                     │
-│                                                               │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  Credential Verification (External Secret Lookups)  │    │
-│  │                                                       │    │
-│  │  ✓ Vault KV Lookups  → secret/machine/rhel          │    │
-│  │  ✓ Vault SSH CA      → ssh/sign/ssh-signer          │    │
-│  │  ✓ NetBox API        → devices inventory             │    │
-│  └─────────────────────────────────────────────────────┘    │
-└──────────────────┬───────────────────┬───────────────────────┘
-                   │                   │
-      ┌────────────▼────────┐    ┌────▼─────────────┐
-      │  HashiCorp Vault    │    │  Netbox (CMDB)   │
-      │  Dynamic Creds      │    │  Infrastructure  │
-      │  SSH CA             │    │  Source of Truth │
-      └─────────────────────┘    └──────────────────┘
-```
 
 #### Key Integration Points
 
@@ -387,13 +295,6 @@ Deploy applications using dynamic database credentials from Vault with automatic
 | **T+300s** | Vault TTL expires | HashiCorp Vault | ⚠️ Automatic credential revocation |
 | T+301s | Application loses database access | App Server | ❌ Connection errors logged |
 
-#### Workflow
-
-```
-User Launch → OPA Policy Check → Vault Dynamic Credential → Network ACL → Deploy App
-              (is user in app-deployers?)  (5-minute TTL user)    (app → db only)
-```
-
 #### Featured Playbook: `deploy-application.yml`
 
 ```yaml
@@ -512,33 +413,6 @@ curl http://app.zta.lab:8081/health
 **What This Use Case Demonstrates:**
 
 AAP **Policy as Code** enforces authorization at the platform level — before any playbook runs. The `aap.gateway` OPA policy evaluates every launch request and blocks unauthorized users from even starting a job. Demonstrates separation of duties and platform-level enforcement with no bypass possible.
-
-#### How AAP Policy as Code Works
-
-```
-User clicks "Launch"
-     │
-     ▼
-┌────────────────────────────────────┐
-│  AAP Controller (before playbook)  │
-│                                    │
-│  POST to OPA:                      │
-│    /v1/data/aap/gateway/decision   │
-│                                    │
-│  Input:                            │
-│    • user, user_groups             │
-│    • template_name                 │
-│    • action: "launch"              │
-└────────────┬───────────────────────┘
-             │
-     ┌───────┴────────┐
-     │                │
-  ALLOW            DENY
-     │                │
-     ▼                ▼
-Playbook runs   Job blocked
-normally        (never starts)
-```
 
 #### Gateway Policy Rules
 
@@ -682,30 +556,6 @@ sudo auditctl -l | grep zta
 **What This Use Case Demonstrates:**
 
 Defense-in-depth for network automation with **two OPA policy rings**: the outer ring (AAP gateway) checks if the user can launch the template, and the inner ring (in-playbook) validates SPIFFE workload identity, user group, VLAN range, and action. Demonstrates workload identity verification and runtime parameter validation.
-
-#### Defense-in-Depth Architecture
-
-```
-┌──────────────────────────────────────────────────┐
-│  OUTER RING — AAP Policy as Code (aap.gateway)   │
-│  Can this user launch this template at all?      │
-│  • Template name contains "VLAN" or "Network"    │
-│  • Required: Infrastructure team                 │
-└────────────────────┬─────────────────────────────┘
-                     │ (only if outer ring allows)
-                     ▼
-┌──────────────────────────────────────────────────┐
-│  INNER RING — In-playbook OPA (zta.network)      │
-│  Runtime context validation:                     │
-│  1. SPIFFE ID verified (workload is legitimate)  │
-│  2. User in network-admins group                 │
-│  3. VLAN ID in permitted range (100-999)         │
-│  4. Action is allowed (create/modify/delete)     │
-└────────────────────┬─────────────────────────────┘
-                     │ (only if inner ring allows)
-                     ▼
-               Arista + Netbox
-```
 
 #### SPIFFE/SPIRE Workload Identity
 
@@ -875,278 +725,7 @@ curl -H "Authorization: Token $NETBOX_TOKEN" \
 
 <h3 id="use-case-5"></h3>
 
-### Use Case 5: Event-Driven Security Response
-
-**Operational Impact:** Low (automated credential revocation is reversible)
-
-**Business Value:** Reduce mean time to respond (MTTR) from hours to seconds through automated security response triggered by SIEM alerts.
-
-**What This Use Case Demonstrates:**
-
-Automated incident response with no human in the loop. A brute-force SSH attack is detected by the SIEM, which sends a webhook to Event-Driven Ansible (EDA). EDA triggers an AAP job that revokes the application's database credentials in Vault, cutting off data access in seconds.
-
-**Automated Incident Response Timeline:**
-
-This demonstrates the core value of Event-Driven Ansible -- detection to mitigation in **under 30 seconds** with no human intervention.
-
-| Time | Event | Component | Action |
-|------|-------|-----------|--------|
-| T+0s | 🚨 Brute-force attack begins | Attacker | 10 rapid failed SSH attempts to app.zta.lab |
-| T+10s | 📊 Logs forwarded to SIEM | Syslog/Filebeat | `/var/log/secure` events shipped to indexer |
-| T+15s | 🔍 Alert condition matched | SIEM | Saved search: `failed_auth >= 5 in 60s` |
-| T+16s | 📡 Webhook POST to EDA | SIEM Alert Action | `POST http://control.zta.lab:5000/endpoint` |
-| T+17s | ⚡ Rulebook condition matched | Event-Driven Ansible | `event.alert.severity == "high"` → trigger job |
-| T+18s | 🤖 AAP job starts | Automation Controller | "Emergency: Revoke App Credentials" launched |
-| T+23s | 🔑 Vault lease revoked | HashiCorp Vault | `vault lease revoke -prefix database/creds/ztaapp` |
-| T+28s | 🛑 Application isolated | App Server | Service stopped, database access denied |
-| **T+28s** | ✅ **Attack surface eliminated** | **Zero Trust System** | **Compromised app can no longer access data** |
-
-#### Timeline: Attack to Isolation
-
-| Time | Event |
-|------|-------|
-| T+0s | Attacker starts brute-force SSH attempts on app server |
-| T+10s | Splunk Universal Forwarder ships auth logs to indexer |
-| T+15s | Splunk saved search fires — detects 5+ failed logins in 60 seconds |
-| T+16s | Splunk webhook alert action POSTs to EDA endpoint |
-| T+17s | EDA rulebook matches event, triggers AAP job |
-| T+23s | AAP runs revocation playbook — Vault lease revoked |
-| T+28s | Application stopped, database credentials gone |
-| **T+28s** | **Attack surface eliminated in ~28 seconds** |
-
-#### Architecture
-
-```
-┌──────────┐   ┌────────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
-│ Attacker │──►│ App Server │──►│  SIEM   │──►│   EDA   │──►│   AAP   │
-│          │   │ /var/log/  │   │ (Splunk,│   │Rulebook │   │  Job    │
-│  SSH     │   │  secure    │   │ Elastic,│   │ matches │   │Template │
-│ brute    │   │            │   │ QRadar) │   │  event  │   │         │
-│ force    │   └────────────┘   └────┬────┘   └────┬────┘   └────┬────┘
-└──────────┘                         │             │             │
-                                     │         Webhook         Revoke
-                                 Logs shipped    POST       credentials
-                                                               │
-                                                               ▼
-                                                         ┌─────────┐
-                                                         │  Vault  │
-                                                         │ Revoke  │
-                                                         │  lease  │
-                                                         └────┬────┘
-                                                              │
-                                                              ▼
-                                                         ┌─────────┐
-                                                         │   App   │
-                                                         │ISOLATED │
-                                                         │ No DB   │
-                                                         │ access  │
-                                                         └─────────┘
-```
-
-#### SIEM Alert Configuration
-
-**Detection query (example for Splunk):**
-```
-(index=zta_app OR index=zta_syslog) sourcetype=syslog "Authentication failure"
-| stats count by src_ip, host
-| where count >= 5
-```
-
-**Detection query (example for Elastic Stack):**
-```json
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "message": "Authentication failure" } },
-        { "range": { "@timestamp": { "gte": "now-1m" } } }
-      ]
-    }
-  },
-  "aggs": {
-    "by_source": {
-      "terms": { "field": "source.ip" },
-      "aggs": { "count": { "value_count": { "field": "_id" } } }
-    }
-  }
-}
-```
-
-**Alert configuration:**
-- **Time Range:** Real-time, 60-second window
-- **Trigger condition:** 5 or more failed authentications from same source IP
-- **Alert action:** Webhook
-- **Webhook URL:** `http://control.zta.lab:5000/endpoint`
-- **Auth Token:** `zta-eda-webhook-a1b2c3d4-e5f6-7890` (sourced from Vault)
-
-#### Event-Driven Ansible Rulebook
-
-`siem-credential-revoke.yml`:
-
-```yaml
----
-- name: Automated Incident Response - Credential Revocation
-  hosts: all
-  sources:
-    - ansible.eda.webhook:
-        host: 0.0.0.0
-        port: 5000
-        token: "{{ lookup('env', 'EDA_WEBHOOK_TOKEN') }}"
-  
-  rules:
-    - name: Revoke credentials on SSH brute-force detection
-      condition: >
-        event.alert.name == "SSH Brute Force Detected" or
-        event.alert.severity == "high"
-      action:
-        run_job_template:
-          name: "Emergency: Revoke App Credentials"
-          organization: "Default"
-```
-
-#### Featured Playbook: `revoke-app-credentials.yml`
-
-```yaml
-- name: Emergency Credential Revocation
-  hosts: localhost
-  tasks:
-    - name: Revoke active Vault database lease
-      ansible.builtin.uri:
-        url: "{{ vault_addr }}/v1/sys/leases/revoke-prefix/database/creds/ztaapp"
-        method: POST
-        headers:
-          X-Vault-Token: "{{ vault_token }}"
-      register: revoke_result
-
-    - name: Stop application service
-      ansible.builtin.systemd:
-        name: ztaapp
-        state: stopped
-      delegate_to: app
-
-    - name: Verify database user revoked
-      ansible.builtin.command:
-        cmd: psql -U postgres -d ztaapp -c "\du"
-      register: db_users
-      delegate_to: db
-      failed_when: "'v-root-ztaapp' in db_users.stdout"
-
-    - name: Notify security team
-      ansible.builtin.debug:
-        msg:
-          - "INCIDENT RESPONSE COMPLETE"
-          - "Application isolated from database"
-          - "Vault credentials revoked"
-          - "Application service stopped"
-          - "Investigate before restoring access"
-```
-
-#### Observing the Automated Response
-
-**1. Before attack — application healthy:**
-```bash
-curl http://app.zta.lab:8081/health
-# {"status": "healthy", "database": "connected"}
-
-ssh -p 2022 rhel@central.zta.lab "sudo -u postgres psql -c '\du'"
-# Shows: v-root-ztaapp-s-abc123def (active Vault user)
-```
-
-**2. Launch brute-force attack:**
-```bash
-# Run from AAP or manually
-ansible-playbook playbooks/simulate-bruteforce.yml
-
-# Sends 10 rapid failed SSH login attempts to app server
-```
-
-**3. Watch automation respond:**
-
-SIEM Alert Dashboard:
-```
-Recent Alerts → "SSH Brute Force Detected"
-Status: Fired at <timestamp>
-Source IP: 192.168.1.x
-Target: app.zta.lab
-Failed attempts: 10
-Actions: Webhook sent to http://control.zta.lab:5000/endpoint
-```
-
-Event-Driven Ansible Controller:
-```
-Rulebook Activations → "SIEM Security Response"
-Status: Running
-Recent Events:
-  - Event received from SIEM webhook
-  - Rule matched: "Revoke credentials on SSH brute-force detection"
-  - Action: run_job_template triggered
-```
-
-Automation Controller:
-```
-Jobs → "Emergency: Revoke App Credentials"
-Status: Successful
-Triggered by: Event-Driven Ansible
-Duration: ~5 seconds
-```
-
-**4. Verify application isolated:**
-```bash
-curl http://app.zta.lab:8081/health
-# Connection refused (application stopped)
-
-ssh -p 2022 rhel@central.zta.lab "sudo -u postgres psql -c '\du'"
-# No v-root-* users — credentials revoked
-```
-
-**5. Restore after investigation:**
-```bash
-# Launch "Restore App Credentials" template from AAP
-# Issues fresh credentials, restarts application
-
-curl http://app.zta.lab:8081/health
-# {"status": "healthy", "database": "connected"}
-```
-
-#### SIEM Data Correlation
-
-Query SIEM to see the full incident timeline:
-
-**Splunk example:**
-```
-index=zta_vault sourcetype="hashicorp:vault:audit"
-| search "database/creds" OR "sys/leases/revoke"
-| table _time, request.path, request.operation, auth.display_name
-| sort _time
-
-Results:
-  2026-04-22 18:00:05 | database/creds/ztaapp-short-lived | read   | aap-service
-  2026-04-22 18:05:28 | sys/leases/revoke-prefix          | update | eda-responder
-```
-
-**Elastic Stack example:**
-```json
-{
-  "query": {
-    "bool": {
-      "should": [
-        { "match": { "request.path": "database/creds" } },
-        { "match": { "request.path": "sys/leases/revoke" } }
-      ],
-      "filter": { "range": { "@timestamp": { "gte": "now-15m" } } }
-    }
-  },
-  "sort": [ { "@timestamp": "asc" } ]
-}
-```
-
-> **Assume Breach Principle:** Automated response doesn't wait for a human to investigate. By the time a security analyst would review the alert, the attack surface is already eliminated. Fresh credentials are only re-issued after investigation confirms the threat is mitigated.
-
----
-
-<h3 id="use-case-6"></h3>
-
-### Use Case 6: Defense-in-Depth Access Control
+### Use Case 5: Defense-in-Depth Access Control
 
 **Operational Impact:** High (restricts SSH access, requires break-glass testing)
 
@@ -1155,37 +734,6 @@ Results:
 **What This Use Case Demonstrates:**
 
 Apply defense-in-depth SSH lockdown with four independent layers, then recover from a misconfiguration that locks AAP out of managed hosts. Demonstrates layered security and the critical importance of tested break-glass access paths.
-
-#### Defense-in-Depth Layers
-
-```
-┌────────────────────────────────────────────────────────────┐
-│  Layer 1: Firewall (firewalld)                             │
-│  Only AAP controller IP and central (break-glass) allowed  │
-│  All other IPs blocked before reaching port 22             │
-└────────────────┬───────────────────────────────────────────┘
-                 │ (if source IP allowed)
-                 ▼
-┌────────────────────────────────────────────────────────────┐
-│  Layer 2: IdM HBAC (Host-Based Access Control)             │
-│  Only aap-service user and breakglass-admins group         │
-│  SSSD enforces at PAM level                                │
-└────────────────┬───────────────────────────────────────────┘
-                 │ (if user + host + service match HBAC rule)
-                 ▼
-┌────────────────────────────────────────────────────────────┐
-│  Layer 3: Vault SSH CA Policy                              │
-│  Only AAP AppRole can sign SSH certificates                │
-│  Humans get read-only access to KV secrets                 │
-└────────────────┬───────────────────────────────────────────┘
-                 │ (if AppRole authenticated)
-                 ▼
-┌────────────────────────────────────────────────────────────┐
-│  Layer 4: SIEM Bypass Detection                            │
-│  Monitor for SSH from non-AAP sources                      │
-│  Alert on repeated HBAC denials                            │
-└────────────────────────────────────────────────────────────┘
-```
 
 #### Layer 1: Firewall Lockdown
 
@@ -1518,58 +1066,7 @@ curl -H "Authorization: Token $NETBOX_TOKEN" \
 # Expected: VLAN 200 with description including SPIFFE ID
 ```
 
-**Use Case 5: Event-Driven Security Response**
-
-```bash
-# Verify SIEM receiving logs (example commands vary by SIEM platform)
-# Splunk example:
-curl -u admin:ansible123! -k \
-  'https://central.zta.lab:8089/services/search/jobs/export' \
-  --data-urlencode 'search=index=zta_app sourcetype=syslog | head 10' \
-  --data-urlencode 'output_mode=json'
-# Expected: Returns log events
-
-# Verify EDA rulebook activation running
-# In EDA Controller: Rulebook Activations → "SIEM Security Response"
-# Expected: Status = Running, port 5000 listening
-
-# Test webhook endpoint
-curl -H "Content-Type: application/json" \
-  -H "Authorization: Bearer zta-eda-webhook-a1b2c3d4-e5f6-7890" \
-  -d '{"alert": {"name": "test"}}' \
-  http://control.zta.lab:5000/endpoint
-# Expected: HTTP 200 (EDA receives event)
-
-# Simulate attack
-ansible-playbook playbooks/simulate-bruteforce.yml
-
-# Verify SIEM alert fired (check UI or REST API - example varies by platform)
-# Splunk example:
-curl -u admin:ansible123! -k \
-  'https://central.zta.lab:8089/services/alerts/fired_alerts'
-# Expected: "SSH Brute Force Detected" appears
-
-# Verify AAP job triggered automatically
-# In AAP: Jobs → "Emergency: Revoke App Credentials"
-# Expected: Recent job with "Triggered by: Event-Driven Ansible"
-
-# Verify credentials revoked
-ssh -p 2022 rhel@central.zta.lab "sudo -u postgres psql -c '\du'" | grep v-root
-# Expected: No results
-
-# Verify application isolated
-curl http://app.zta.lab:8081/health
-# Expected: Connection refused or unhealthy
-
-# Verify Vault audit log records revocation
-curl -u admin:ansible123! -k \
-  'https://central.zta.lab:8089/services/search/jobs/export' \
-  --data-urlencode 'search=index=zta_vault "sys/leases/revoke" | head 1' \
-  --data-urlencode 'output_mode=json'
-# Expected: Revocation event logged
-```
-
-**Use Case 6: Defense-in-Depth Access Control**
+**Use Case 5: Defense-in-Depth Access Control**
 
 ```bash
 # Layer 1: Firewall test
@@ -1643,7 +1140,6 @@ ipa hbactest --user=aap-service --host=app.zta.lab --service=sshd
 | 🔴 Vault dynamic credentials fail with 403 | Policy path mismatch | `vault list database/roles` | Verify policy path matches exact role name |
 | 🔴 AAP jobs fail with "Permission denied" | HBAC rule missing aap-service user | `ipa hbactest --user=aap-service --host=<target> --service=sshd` | Add user with `ipa hbacrule-add-user` |
 | 🔴 Application shows "unhealthy" after deployment | Database credentials expired | `vault read database/creds/ztaapp-short-lived` | Check TTL, run credential rotation playbook |
-| 🔴 EDA rulebook doesn't trigger | Webhook token mismatch | Check EDA Controller logs: `/var/log/eda/` | Verify SIEM webhook token matches EDA credential |
 | 🔴 SPIFFE verification fails | SPIRE Agent not running | `sudo systemctl status spire-agent` | Start agent: `sudo systemctl start spire-agent` |
 | 🔴 Netbox inventory sync fails | API token invalid or expired | `curl -H "Authorization: Token $TOKEN" http://netbox:8880/api/` | Regenerate token in Netbox UI, update AAP credential |
 | 🔴 OPA policy returns 404 | Policy not loaded | `curl http://central.zta.lab:8181/v1/policies` | Re-run `setup/configure-opa-base.yml` |
@@ -1663,7 +1159,7 @@ Organizations can adopt Zero Trust incrementally, starting with foundational int
 |----------------|-------------|---------------------|-------------------|
 | **Crawl** | Read-only integrations and manual workflows | • Vault credential lookups (read-only)<br>• OPA policy queries (advisory mode)<br>• Netbox inventory source<br>• IdM LDAP authentication<br>• Manual validation of each operation | Yes — every operation requires human approval via AAP job launch |
 | **Walk** | Automated operations with policy gates | • Dynamic credential generation (short TTL)<br>• Platform-level policy enforcement (AAP Policy as Code)<br>• Automated network changes (VLAN creation)<br>• Policy-gated patching<br>• Credential rotation on schedule | Conditional — policy allows/denies based on user + context, no per-operation approval |
-| **Run** | Fully automated incident response and self-healing | • Event-driven credential revocation (no human in loop)<br>• Automated break-glass recovery<br>• Self-healing configuration drift detection<br>• AI-driven policy recommendations<br>• Continuous compliance reporting | No — automation responds within seconds based on policy, human notified after action |
+| **Run** | Fully automated defense and self-healing | • Automated break-glass recovery<br>• Self-healing configuration drift detection<br>• Continuous compliance reporting<br>• SIEM-to-EDA incident response (see complementary guides) | No -- automation responds within seconds based on policy, human notified after action |
 
 ### Implementation Phases
 
@@ -1703,31 +1199,28 @@ Success criteria:
 - Separation of duties enforced (network admins ≠ patch admins ≠ app deployers)
 - Audit trail captures user + workload + policy decision
 
-**Phase 3: Automated Response (Run — 2-4 weeks)**
+**Phase 3: Automated Response (Run -- 2-4 weeks)**
 
-Focus: Eliminate manual incident response and enable self-healing.
+Focus: Extend automation into self-healing operations and continuous compliance.
 
-- Deploy SIEM integration (Splunk, Elastic, QRadar, or other)
-- Configure Event-Driven Ansible rulebooks
-- Enable automated credential revocation on attack detection
 - Implement configuration drift detection and remediation
 - Add self-healing for common failure scenarios
+- Validate break-glass recovery under load
+- Integrate SIEM-to-EDA incident response using the complementary guides below
 
 Success criteria:
-- Incident response time < 30 seconds from detection to mitigation
-- Credentials revoked automatically on brute-force detection
 - Configuration drift auto-remediated
+- Break-glass recovery tested and documented
 - All security events logged with full context
-- No human required for common incident types
+- Incident response workflows documented for follow-on SIEM/EDA guide
 
 ### Measuring Success
 
 | Metric | Baseline (Manual) | Target (Automated) | Measurement Method |
 |--------|-------------------|--------------------|--------------------|
 | **Credential rotation time** | 2-4 hours (manual rotation across systems) | < 5 minutes (automated, short-lived) | Vault audit log: time between credential creation and revocation |
-| **Incident response time (brute-force)** | 30-60 minutes (alert → analyst review → manual remediation) | < 30 seconds (detection → automated revocation) | Splunk correlation: alert timestamp to Vault revocation timestamp |
-| **Policy compliance audit** | 2-5 days (manual evidence collection) | < 1 hour (automated report generation) | Splunk dashboard: OPA decisions + Vault lifecycle + IdM auth events |
-| **Unauthorized access attempts** | Detected post-mortem (if at all) | Detected and blocked in real-time | Splunk alert count: denied operations vs. allowed operations |
+| **Policy compliance audit** | 2-5 days (manual evidence collection) | < 1 hour (automated report generation) | OPA decisions + Vault lifecycle + IdM auth events |
+| **Unauthorized access attempts** | Detected post-mortem (if at all) | Detected and blocked in real-time | Denied operations vs. allowed operations in audit logs |
 | **Configuration drift detection** | Weekly manual checks | Continuous, auto-remediated within 15 minutes | AAP job logs: drift detection frequency and remediation time |
 | **Mean time to recovery (MTTR)** | 4-8 hours (manual diagnosis and fix) | < 30 minutes (automated diagnosis via break-glass playbooks) | AAP job history: time from failure detection to service restoration |
 
@@ -1756,23 +1249,21 @@ Success criteria:
 
 ## Summary
 
-This guide demonstrated six use cases for implementing Zero Trust Architecture with Ansible Automation Platform as the central orchestration layer:
+This guide demonstrated five use cases for implementing Zero Trust Architecture with Ansible Automation Platform as the central orchestration layer:
 
 1. 🔍 **Infrastructure Integration** — Automated verification of identity, secrets, policy, and CMDB components
 2. 🔑 **Just-In-Time Credentials** — Dynamic database credentials with automatic expiration (5-minute TTL)
 3. 🛡️ **Platform-Level Policy Enforcement** — AAP Policy as Code blocks unauthorized launches with no bypass possible
 4. 🔐 **Workload Identity Verification** — SPIFFE/SPIRE cryptographically proves automation platform legitimacy
-5. ⚡ **Event-Driven Security Response** — Automated credential revocation in under 30 seconds from attack detection
-6. 🔒 **Defense-in-Depth Access Control** — Four independent layers with tested break-glass recovery
+5. 🔒 **Defense-in-Depth Access Control** — Four independent layers with tested break-glass recovery
 
 **Measured Business Impact:**
 
 - ✅ **80% reduction** in manual security operations through automation
 - ✅ **95% reduction** in credential compromise risk through short-lived credentials
-- ✅ **MTTR from hours to seconds** through event-driven incident response
 - ✅ **Continuous compliance** through unified audit trails across all components
 
-Organizations implementing this architecture eliminate standing credentials, enforce deny-by-default policies at multiple layers, and automate the coordination of identity, secrets, policy, network controls, and incident response — transforming Zero Trust from a conceptual framework into an operational reality.
+Organizations implementing this architecture eliminate standing credentials, enforce deny-by-default policies at multiple layers, and automate the coordination of identity, secrets, policy, and network controls -- transforming Zero Trust from a conceptual framework into an operational reality.
 
 ---
 
@@ -1784,7 +1275,6 @@ Organizations implementing this architecture eliminate standing credentials, enf
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f511.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.vaultproject.io/">HashiCorp Vault</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6e1.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.openpolicyagent.org/">Open Policy Agent</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4dc.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://spiffe.io/">SPIFFE/SPIRE</a>
-- <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e1.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/event-driven-ansible">Event-Driven Ansible</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://netbox.dev/">Netbox</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f310.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.arista.com/en/products/software-controlled-container-networking">Arista cEOS</a>
 
