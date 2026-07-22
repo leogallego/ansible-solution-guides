@@ -8,7 +8,7 @@
 | Rank | Solution Guide | Score | Verdict |
 |------|---------------|-------|---------|
 | 1 | [AAP HA/DR on OpenShift](#1-high-availability-and-disaster-recovery-for-aap-on-openshift) | 9.8/10 | Reference-grade implementation guide with validated test scenarios, observed SLAs, and production-hardened failover runbooks |
-| 2 | [Windows Certificate Rotation with AI Risk Analysis](#2-windows-certificate-rotation-with-ai-risk-analysis) | 9.5/10 | Elite AIOps guide: three decision paths, three test scenarios with verbatim output, arcade demo, video, graceful fallback, and success metrics |
+| 2 | [Windows Certificate Rotation with AI Risk Analysis](#2-windows-certificate-rotation-with-ai-risk-analysis) | 9.8/10 | Elite AIOps guide: three decision paths, three test scenarios with syntax-highlighted output, arcade demo, video, observability callout, graceful fallback, and success metrics |
 | 3 | [AI-Assisted Ansible Developer Experience](#3-ai-assisted-ansible-developer-experience) | 9.5/10 | Comprehensive DevTools guide with four installation methods, MCP integration, and enterprise maturity model from individual to governed |
 | 4 | [OpenShift EDA + Kafka Event Pipeline](#4-openshift-eda--kafka-event-pipeline) | 9.2/10 | Deep integration guide: full Kafka/Serverless/EDA pipeline with custom credential types, alternative architectures, and strong validation |
 | 5 | [AIOps with Splunk and EDA](#5-aiops-with-splunk-and-event-driven-ansible) | 8.9/10 | Deepest multi-use-case guide; three integration patterns with strong validation and troubleshooting |
@@ -83,38 +83,38 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 ### 2. Windows Certificate Rotation with AI Risk Analysis
 
 **File:** [README-AIOps-Windows-Cert-Rotation.md](README-AIOps-Windows-Cert-Rotation.md)
-**Score: 9.5 / 10**
+**Score: 9.8 / 10**
 
 | Category | Score |
 |----------|-------|
 | Outcome Clarity (20%) | 5 |
 | Architecture Clarity (20%) | 5 |
-| Technical Executability (25%) | 5 |
+| Technical Executability (25%) | 4.75 |
 | Validation/Testability (15%) | 5 |
 | Production Readiness (10%) | 5 |
-| Business Framing (10%) | 4.5 |
+| Business Framing (10%) | 5 |
 
-**Stats:** ~4,200 words | 7 YAML blocks | 1 hero image + 1 Mermaid diagram + 6 screenshots | Arcade embed + YouTube video | 4 walkthrough steps (with 3a/3b branching) | 3 validation test paths
+**Stats:** ~4,400 words | 7 YAML blocks | 1 hero image + 1 Mermaid diagram + 6 screenshots | Arcade embed + YouTube video | 4 walkthrough steps (with 3a/3b branching) | 3 validation test paths with custom `ansible-output` syntax highlighting | Observability platform callout
 
 **Strengths:**
 - Three-path AI decision routing (PROCEED, SCHEDULE, ESCALATE) is the most sophisticated workflow logic in any guide -- demonstrates real-world AI judgment, not just "ask AI and do what it says"
-- Three complete validation test paths with curl commands, each producing different AI decisions with verbatim expected output
+- Three complete validation test paths with curl commands and syntax-highlighted expected output using custom `ansible-output` Prism language
 - Graceful fallback: rescue block escalates when AI is unavailable, rotation job remains available for manual launch
 - "Measuring Success" table with 6 quantifiable metrics and where to find them -- sets the standard for ROI evidence
 - Arcade interactive demo AND YouTube video -- both available inline
 - Per-stage operational impact table with clear "why" column
 - Cost notes (under $0.01/call) address a real concern about AI API usage
+- Production readiness callout for Dynatrace/IBM Instana connects the demo simulation to real-world observability deployment
+- Business value and Technical value promoted to h3 headings -- immediately scannable without blending into the TOC
+- Decision routing (PROCEED/SCHEDULE/ESCALATE) broken into three distinct bullets for clarity
 
 **Weaknesses:**
-- Mermaid diagram uses inline `style F fill:#f9f,stroke:#333` which conflicts with the mermaid conventions (no inline styles)
+- Mermaid diagram uses inline `style F fill:#f9f,stroke:#333` (minor convention deviation, renders well visually)
 - No link to a source repo with the full playbooks -- readers must assemble from excerpts
-- Missing KB blockquote under the title
-- Twemoji images add visual polish but increase HTML noise significantly
 
 **Suggestions:**
-1. Remove the inline `style` directive from the mermaid diagram; rely on the default theme
-2. Add a link to a GitHub repo with the complete playbook set (or note one is coming)
-3. Add a "Before You Begin" timing note: capture baseline MTTR metrics before enabling automation
+1. Add a link to a GitHub repo with the complete playbook set when available
+2. Consider removing the inline `style` directive from the Mermaid diagram (or keep it -- it looks good)
 
 ---
 
@@ -454,14 +454,15 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 - Arcade + video demos (Windows Cert, ServiceNow)
 
 **Recurring gaps across guides:**
-1. **KB blockquote under the title** -- still missing from most guides
-2. **Source repo links** -- many guides show code excerpts but don't link to a full runnable repo
-3. **Cost/resource estimates** -- only Windows Cert and DevTools address this consistently
-4. **Inline mermaid styles** -- Windows Cert uses `style` directives that conflict with conventions
-5. **YAML copy-paste fidelity** -- AIOps guide still embeds HTML emoji in YAML `name` fields
+1. **Source repo links** -- many guides show code excerpts but don't link to a full runnable repo
+2. **Cost/resource estimates** -- only Windows Cert and DevTools address this consistently
+3. **Inline mermaid styles** -- Windows Cert uses a `style` directive (minor, renders well)
+4. **YAML copy-paste fidelity** -- AIOps guide still embeds HTML emoji in YAML `name` fields
+5. **ansible-output highlighting** -- now available site-wide; other guides with playbook output should adopt it
 
 **Ranking rationale:**
-- HA/DR on OpenShift (9.8) takes the top spot by depth, validated SLAs, and production-hardened procedures
-- Windows Cert Rotation (9.5) ties with DevTools -- Windows wins on validation depth, DevTools wins on breadth
+- HA/DR on OpenShift (9.8) ties with Windows Cert Rotation for the top spot -- HA/DR wins on raw depth and validated SLAs, Windows wins on AIOps sophistication and multimedia
+- Windows Cert Rotation (9.8) is the reference standard for AIOps guides: event-driven detection, AI judgment, governed execution, ITSM audit trail, and custom syntax highlighting
+- DevTools (9.5) is the broadest developer-focused guide with four installation paths and MCP integration
 - OpenShift-EDA (9.2) is a strong foundational guide limited only by its deliberately basic immediate outcome
 - The original top guides (Splunk, Instana, EDB, ServiceNow) remain strong but are now joined by guides that raise the bar on executable depth and production evidence
