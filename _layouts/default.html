@@ -47,6 +47,42 @@
   </head>
   <body>
     <script src="{{ '/assets/prism.js' | relative_url }}"></script>
+    <script>
+      Prism.languages['ansible-output'] = {
+        'task-header': {
+          pattern: /^(TASK|PLAY|PLAY RECAP|RUNNING HANDLER) \[.*\][ *]*/m,
+          greedy: true
+        },
+        'status-ok': {
+          pattern: /^ok:/m,
+          greedy: true
+        },
+        'status-changed': {
+          pattern: /^changed:/m,
+          greedy: true
+        },
+        'status-fatal': {
+          pattern: /^fatal:/m,
+          greedy: true
+        },
+        'status-skipping': {
+          pattern: /^skipping:/m,
+          greedy: true
+        },
+        'host': {
+          pattern: /\[[\w.\-<>]+\]/,
+          greedy: true
+        },
+        'string': {
+          pattern: /"(?:\\.|[^"\\])*"/,
+          greedy: true
+        },
+        'keyword': {
+          pattern: /\b(DECISION|RISK LEVEL|RATIONALE|PROCEED|SCHEDULE|ESCALATE|CRITICAL|HIGH|MEDIUM|LOW)\b/
+        },
+        'punctuation': /[{}[\]:,=>]/
+      };
+    </script>
     <script src="{{ '/assets/tablelink.js' | relative_url }}"></script>
 
     <div class="wrapper">

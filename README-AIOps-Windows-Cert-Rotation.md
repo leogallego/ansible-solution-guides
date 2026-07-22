@@ -513,7 +513,7 @@ curl -X POST "${EDA_EVENT_STREAM_URL}" \
 
 Expected output (AI Risk Analysis job):
 
-```
+```ansible-output
 TASK [Display AI decision] *****************************************************
 ok: [localhost] => {
     "msg": [
@@ -542,7 +542,7 @@ ok: [localhost] => {
 
 Expected output (Rotate Windows Certificate job):
 
-```
+```ansible-output
 TASK [Confirm replacement certificate found] ***********************************
 ok: [<WINDOWS_HOST_IP>] => {
     "msg": "Found replacement certificate: <NEW_THUMBPRINT>"
@@ -580,7 +580,7 @@ curl -X POST "${EDA_EVENT_STREAM_URL}" \
 
 Expected output:
 
-```
+```ansible-output
 TASK [Display AI decision] *****************************************************
 ok: [localhost] => {
     "msg": [
@@ -604,7 +604,7 @@ ok: [localhost] => {
 
 ### Test: ESCALATE Path
 
-To test the ESCALATE path, pass `additional_context` with a hard conflict the AI cannot resolve — the certificate expires before the freeze lifts:
+To test the ESCALATE path, pass `additional_context` with a hard conflict the AI cannot resolve -- the certificate expires before the freeze lifts:
 
 ```bash
 curl -X POST "${EDA_EVENT_STREAM_URL}" \
@@ -622,7 +622,7 @@ curl -X POST "${EDA_EVENT_STREAM_URL}" \
 
 Expected output:
 
-```
+```ansible-output
 TASK [Display AI decision] *****************************************************
 ok: [localhost] => {
     "msg": [
