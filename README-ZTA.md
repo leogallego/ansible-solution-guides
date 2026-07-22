@@ -1278,4 +1278,18 @@ Organizations implementing this architecture eliminate standing credentials, enf
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://netbox.dev/">Netbox</a>
 - <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f310.png" width="20" style="vertical-align:text-bottom;"> <a target="_blank" href="https://www.arista.com/en/products/software-controlled-container-networking">Arista cEOS</a>
 
+---
+
+## Next Steps
+
+| | |
+|---|---|
+| <a target="_blank" href="https://www.redhat.com/en/technologies/management/ansible/trial"><strong>Try Ansible Automation Platform</strong></a> | Start a free 60-day trial and build your first Zero Trust automation workflows |
+| <a target="_blank" href="https://github.com/nmartins0611/zta-workshop-aap"><strong>ZTA Workshop Source Code</strong></a> | Complete playbooks, OPA policies, and configuration for all five use cases |
+| <a target="_blank" href="https://www.redhat.com/en/services/consulting"><strong>Red Hat Consulting</strong></a> | Work with Red Hat experts to design and deploy Zero Trust Architecture at scale |
+| <a target="_blank" href="https://www.redhat.com/en/services/training-and-certification"><strong>Training and Certification</strong></a> | Build team skills with hands-on security automation courses |
+
+---
+
+<img width="400" src="https://raw.githubusercontent.com/rhpds/showroom-lb2961-ai-driven-ansible-automation/refs/heads/main/solution_images/aap_logo.png">
 {% endraw %}

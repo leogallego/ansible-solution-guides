@@ -9,15 +9,16 @@
 |------|---------------|-------|---------|
 | 1 | [AAP HA/DR on OpenShift](#1-high-availability-and-disaster-recovery-for-aap-on-openshift) | 9.8/10 | Reference-grade implementation guide with validated test scenarios, observed SLAs, and production-hardened failover runbooks |
 | 2 | [Windows Certificate Rotation with AI Risk Analysis](#2-windows-certificate-rotation-with-ai-risk-analysis) | 9.8/10 | Elite AIOps guide: three decision paths, three test scenarios with syntax-highlighted output, arcade demo, video, observability callout, graceful fallback, and success metrics |
-| 3 | [AI-Assisted Ansible Developer Experience](#3-ai-assisted-ansible-developer-experience) | 9.5/10 | Comprehensive DevTools guide with four installation methods, MCP integration, and enterprise maturity model from individual to governed |
-| 4 | [OpenShift EDA + Kafka Event Pipeline](#4-openshift-eda--kafka-event-pipeline) | 9.2/10 | Deep integration guide: full Kafka/Serverless/EDA pipeline with custom credential types, alternative architectures, and strong validation |
-| 5 | [AIOps with Splunk and EDA](#5-aiops-with-splunk-and-event-driven-ansible) | 8.9/10 | Deepest multi-use-case guide; three integration patterns with strong validation and troubleshooting |
-| 6 | [Automated Incident Remediation with IBM Instana](#6-automated-incident-remediation-with-ibm-instana) | 8.9/10 | Dual-path architecture (EDA vs native); per-use-case operational impact and unusually complete validation |
-| 7 | [High-Availability AAP with EDB PostgreSQL DR](#7-high-availability-aap-with-edb-postgresql-dr) | 8.7/10 | Reference-grade VM-based DR architecture with diagrams, runbooks, and failback procedures |
-| 8 | [Unlock AIOps with ServiceNow LEAP and Ansible MCP server](#8-unlock-aiops-with-servicenow-leap-and-ansible-mcp-server) | 8.7/10 | Strong LEAP/MCP governance story with MTTR focus, customer evidence, multi-agent visibility |
-| 9 | [AIOps automation with Ansible](#9-aiops-automation-with-ansible) | 8.5/10 | Strong foundational reference architecture; best systems narrative, observability catalog, and playbook source mapping |
-| 10 | [AI Infrastructure automation with Ansible](#10-ai-infrastructure-automation-with-ansible) | 7.3/10 | Clear two-collection story (infra.ai + redhat.ai); needs framework alignment and deeper validation |
-| 11 | [Intelligent Assistant with Red Hat AI Inference Server](#11-intelligent-assistant-with-red-hat-ai-inference-server) | 6.9/10 | Strong hands-on RHAIIS + Lightspeed hookup; weakest framework alignment of published guides |
+| 3 | [Zero Trust Architecture with Ansible](#3-zero-trust-architecture-with-ansible-automation-platform) | 9.6/10 | Five integrated use cases demonstrating defense-in-depth: OPA policy gates, SPIFFE workload identity, JIT credentials, and break-glass recovery with phased implementation roadmap |
+| 4 | [AI-Assisted Ansible Developer Experience](#4-ai-assisted-ansible-developer-experience) | 9.5/10 | Comprehensive DevTools guide with four installation methods, MCP integration, and enterprise maturity model from individual to governed |
+| 5 | [OpenShift EDA + Kafka Event Pipeline](#5-openshift-eda--kafka-event-pipeline) | 9.2/10 | Deep integration guide: full Kafka/Serverless/EDA pipeline with custom credential types, alternative architectures, and strong validation |
+| 6 | [AIOps with Splunk and EDA](#6-aiops-with-splunk-and-event-driven-ansible) | 8.9/10 | Deepest multi-use-case guide; three integration patterns with strong validation and troubleshooting |
+| 7 | [Automated Incident Remediation with IBM Instana](#7-automated-incident-remediation-with-ibm-instana) | 8.9/10 | Dual-path architecture (EDA vs native); per-use-case operational impact and unusually complete validation |
+| 8 | [High-Availability AAP with EDB PostgreSQL DR](#8-high-availability-aap-with-edb-postgresql-dr) | 8.7/10 | Reference-grade VM-based DR architecture with diagrams, runbooks, and failback procedures |
+| 9 | [Unlock AIOps with ServiceNow LEAP and Ansible MCP server](#9-unlock-aiops-with-servicenow-leap-and-ansible-mcp-server) | 8.7/10 | Strong LEAP/MCP governance story with MTTR focus, customer evidence, multi-agent visibility |
+| 10 | [AIOps automation with Ansible](#10-aiops-automation-with-ansible) | 8.5/10 | Strong foundational reference architecture; best systems narrative, observability catalog, and playbook source mapping |
+| 11 | [AI Infrastructure automation with Ansible](#11-ai-infrastructure-automation-with-ansible) | 7.3/10 | Clear two-collection story (infra.ai + redhat.ai); needs framework alignment and deeper validation |
+| 12 | [Intelligent Assistant with Red Hat AI Inference Server](#12-intelligent-assistant-with-red-hat-ai-inference-server) | 6.9/10 | Strong hands-on RHAIIS + Lightspeed hookup; weakest framework alignment of published guides |
 
 ---
 
@@ -118,7 +119,47 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 3. AI-Assisted Ansible Developer Experience
+### 3. Zero Trust Architecture with Ansible Automation Platform
+
+**File:** [README-ZTA.md](README-ZTA.md)
+**Score: 9.6 / 10**
+
+| Category | Score |
+|----------|-------|
+| Outcome Clarity (20%) | 5 |
+| Architecture Clarity (20%) | 5 |
+| Technical Executability (25%) | 5 |
+| Validation/Testability (15%) | 5 |
+| Production Readiness (10%) | 4.5 |
+| Business Framing (10%) | 4 |
+
+**Stats:** ~7,800 words | 12+ YAML/bash code blocks | 5 integrated use cases | Per-use-case validation suites | 9-row troubleshooting table | Phased implementation roadmap with success criteria | Measuring Success metrics table
+
+**Strengths:**
+- Five integrated use cases that build on each other: verification -> JIT credentials -> policy enforcement -> workload identity -> defense-in-depth. The progression tells a coherent story
+- OPA policy enforcement at two rings (platform gateway + in-playbook) is the most sophisticated authorization model in any guide
+- SPIFFE/SPIRE workload identity verification is unique across all guides -- cryptographic proof that the automation platform is legitimate
+- Defense-in-depth use case with deliberate lockout scenario and tested break-glass recovery is exceptional -- teaches incident response, not just happy-path automation
+- Comprehensive validation test suite with deny/allow scenarios for every use case, including "wrong user", "wrong VLAN", "wrong SPIFFE ID" negative tests
+- Phased implementation roadmap (Crawl/Walk/Run) with specific week estimates and success criteria for each phase
+- Measuring Success table with baseline vs. target metrics and measurement methods
+- Source code repository linked directly (nmartins0611/zta-workshop-aap)
+- Credential lifecycle timeline table showing exactly what happens from T+0 to T+301s
+
+**Weaknesses:**
+- No Mermaid architecture diagram (workflow patterns described in text only)
+- No demos, videos, or interactive walkthroughs (workshop link is good but not an embedded demo)
+- Business Framing relies on bold percentages in Summary rather than a dedicated ROI Recap section
+- Empty HTML anchor tags (`<h2 id="..."></h2>`) clutter the source but don't affect rendering
+
+**Suggestions:**
+1. Add a Mermaid diagram showing the defense-in-depth rings and OPA policy enforcement flow
+2. Consider recording a demo of the break-glass recovery scenario -- it's the most dramatic and teachable moment
+3. Add an embedded Arcade walkthrough for the workshop if available
+
+---
+
+### 4. AI-Assisted Ansible Developer Experience
 
 **File:** [README-Ansible-DevTools.md](README-Ansible-DevTools.md)
 **Score: 9.5 / 10**
@@ -156,7 +197,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 4. OpenShift EDA + Kafka Event Pipeline
+### 5. OpenShift EDA + Kafka Event Pipeline
 
 **File:** [README-OpenShift-EDA-Kafka.md](README-OpenShift-EDA-Kafka.md)
 **Score: 9.2 / 10**
@@ -193,7 +234,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 5. AIOps with Splunk and Event-Driven Ansible
+### 6. AIOps with Splunk and Event-Driven Ansible
 
 **File:** [README-AIOps-Splunk-ITSI.md](README-AIOps-Splunk-ITSI.md)
 **Score: 8.9 / 10**
@@ -229,7 +270,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 6. Automated Incident Remediation with IBM Instana
+### 7. Automated Incident Remediation with IBM Instana
 
 **File:** [README-Instana-AIOps.md](README-Instana-AIOps.md)
 **Score: 8.9 / 10**
@@ -265,7 +306,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 7. High-Availability AAP with EDB PostgreSQL DR
+### 8. High-Availability AAP with EDB PostgreSQL DR
 
 **File:** [README-EDB.md](README-EDB.md)
 **Score: 8.7 / 10**
@@ -301,7 +342,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 8. Unlock AIOps with ServiceNow LEAP and Ansible MCP server
+### 9. Unlock AIOps with ServiceNow LEAP and Ansible MCP server
 
 **File:** [README-AIOps-ServiceNow.md](README-AIOps-ServiceNow.md)
 **Score: 8.7 / 10**
@@ -334,7 +375,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 9. AIOps automation with Ansible
+### 10. AIOps automation with Ansible
 
 **File:** [README-AIOps.md](README-AIOps.md)
 **Score: 8.5 / 10**
@@ -368,7 +409,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 10. AI Infrastructure automation with Ansible
+### 11. AI Infrastructure automation with Ansible
 
 **File:** [README-IA.md](README-IA.md)
 **Score: 7.3 / 10**
@@ -401,7 +442,7 @@ Score each category 1-5. Multiply by weight. Final score out of 10. Any category
 
 ---
 
-### 11. Intelligent Assistant with Red Hat AI Inference Server
+### 12. Intelligent Assistant with Red Hat AI Inference Server
 
 **File:** [README-Intelligent-Assistant-RHAIIS.md](README-Intelligent-Assistant-RHAIIS.md)
 **Score: 6.9 / 10**
