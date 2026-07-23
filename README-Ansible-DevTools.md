@@ -166,24 +166,6 @@ adt --version
 >
 > The container image supports nested Podman, so you can run `molecule test` and `ansible-builder build` inside the dev container without additional configuration.
 
-**Running the container image directly (without VS Code):**
-
-```bash
-podman run -it --rm \
-  --cap-add=SYS_ADMIN \
-  --cap-add=SYS_RESOURCE \
-  --device "/dev/fuse" \
-  --hostname=ansible-dev-container \
-  --name=ansible-dev-container \
-  --security-opt "apparmor=unconfined" \
-  --security-opt "label=disable" \
-  --security-opt "seccomp=unconfined" \
-  --user=root \
-  --userns=host \
-  -v $PWD:/workdir \
-  ghcr.io/ansible/community-ansible-dev-tools:latest
-```
-
 ---
 
 ### Method B: RPM (Red Hat Subscription)
@@ -235,45 +217,21 @@ Both subscriptions provide repos for RHEL 9 across four architectures: `x86_64`,
 
 **Best for:** Individual developers, quick setup on Linux/macOS/WSL, CI pipelines.
 
-**Step 1:** Install [uv](https://docs.astral.sh/uv/) if you don't have it:
+Install [uv](https://docs.astral.sh/uv/) and set up ADT in a virtual environment:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-**Step 2:** Create a virtual environment and install ADT:
-
-```bash
 uv venv ~/ansible-dev-venv
 source ~/ansible-dev-venv/bin/activate
 uv add ansible-dev-tools
-```
-
-**Step 3:** Verify the installation:
-
-```bash
 adt --version
 ```
 
-> **Tip:** Always use a virtual environment.
->
-> Installing ADT system-wide can conflict with OS-packaged Python modules. On macOS 14+ and newer Linux distributions, the system Python is externally managed (PEP 668) and direct installs will fail. Using `uv` with a venv avoids this entirely.
+To upgrade: `uv add --upgrade ansible-dev-tools`. To pin a version: `uv add ansible-dev-tools==26.4.6`.
 
 > **Tip:** `pip` works too.
 >
-> If you prefer `pip`, replace `uv venv` with `python3 -m venv` and `uv add` with `pip install`. The rest of the workflow is identical.
-
-**Upgrading:**
-
-```bash
-uv add --upgrade ansible-dev-tools
-```
-
-**Pinning a specific version:**
-
-```bash
-uv add ansible-dev-tools==26.4.6
-```
+> Replace `uv venv` with `python3 -m venv` and `uv add` with `pip install`. Always use a virtual environment -- on macOS 14+ and newer Linux distributions, the system Python is externally managed (PEP 668) and direct installs will fail.
 
 ---
 
