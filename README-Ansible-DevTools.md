@@ -128,8 +128,8 @@ graph LR
 
 Pre-built container images with all ADT tools, the Ansible VS Code extension, and nested Podman support are available in two variants:
 
-- **Upstream (community):** `ghcr.io/ansible/community-ansible-dev-tools:latest`
-- **Downstream (Red Hat supported):** `registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9` (requires [Red Hat registry authentication](https://access.redhat.com/RegistryAuthentication))
+- **Red Hat supported:** `registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9` (requires [Red Hat registry authentication](https://access.redhat.com/RegistryAuthentication))
+- **Community:** `ghcr.io/ansible/community-ansible-dev-tools:latest`
 
 **Step 1:** Install prerequisites:
 
