@@ -35,8 +35,6 @@ The goal is to move every automation developer in your organization onto the sam
     - [Method B: RPM (Red Hat Subscription)](#method-b-rpm-red-hat-subscription)
     - [Method C: Python Package (pipx)](#method-c-python-package-pipx)
     - [Method D: Red Hat OpenShift Dev Spaces](#method-d-red-hat-openshift-dev-spaces)
-    - [Verify Your Installation](#verify-your-installation)
-    - [Troubleshooting](#troubleshooting)
   - [AI-Assisted Ansible Development](#ai-assisted-ansible-development)
     - [Ansible Devtools MCP Server](#ansible-devtools-mcp-server)
     - [Connecting to Ansible Automation Platform](#connecting-to-ansible-automation-platform)
@@ -298,30 +296,6 @@ adt --version
 | **Multi-user** | Each developer gets an isolated workspace on shared infrastructure |
 | **Preloaded extensions** | Ansible VS Code extension with lint, navigator, and creator integration |
 | **Git integration** | OAuth2 for GitHub/GitLab, SSH key forwarding |
-
-### Verify Your Installation
-
-Regardless of the method, verify ADT is working:
-
-```bash
-adt --version
-ansible-creator init collection testns.testcol --init-path /tmp/testcol
-cd /tmp/testcol && ansible-lint
-```
-
-Expected: `adt --version` lists all tool versions, and `ansible-lint` reports `Passed with production profile: 0 failure(s), 0 warning(s) on 5 files.`
-
-### Troubleshooting
-
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| `command not found: adt` | Not installed or not in PATH | Check installation method and re-run |
-| `pip install` fails with "externally managed" | PEP 668 on modern macOS/Linux | Use `pipx install` instead |
-| `dnf install` says package not found | AAP repo not enabled | Run `subscription-manager repos --list \| grep ansible` |
-| Dev container fails to start | Container runtime not running | Start Docker Desktop or Podman Desktop, then retry |
-| Molecule tests fail with "permission denied" | Missing container capabilities | Add `--cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE --device /dev/fuse` flags |
-| Dev Spaces workspace stuck starting | Resource limits exceeded or image pull failure | Check OpenShift events with `oc get events -n <workspace-ns>` |
-| `ansible-lint` shows different results across team | Different ADT versions | Use container-based methods for consistency |
 
 ---
 
