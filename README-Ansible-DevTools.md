@@ -31,7 +31,7 @@ The goal is to move every automation developer in your organization onto the sam
   - [Installation Methods](#installation-methods)
     - [Method A: Dev Container (VS Code)](#method-a-dev-container-vs-code)
     - [Method B: RPM (Red Hat Subscription)](#method-b-rpm-red-hat-subscription)
-    - [Method C: Python Package (uv)](#method-c-python-package-uv)
+    - [Method C: Python Package (pipx)](#method-c-python-package-pipx)
     - [Method D: Red Hat OpenShift Dev Spaces](#method-d-red-hat-openshift-dev-spaces)
   - [AI-Assisted Ansible Development](#ai-assisted-ansible-development)
     - [Ansible Devtools MCP Server](#ansible-devtools-mcp-server)
@@ -213,25 +213,20 @@ Both subscriptions provide repos for RHEL 9 across four architectures: `x86_64`,
 
 ---
 
-### Method C: Python Package (uv)
+### Method C: Python Package (pipx)
 
 **Best for:** Individual developers, quick setup on Linux/macOS/WSL, CI pipelines.
 
-Install [uv](https://docs.astral.sh/uv/) and set up ADT in a virtual environment:
-
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv ~/ansible-dev-venv
-source ~/ansible-dev-venv/bin/activate
-uv add ansible-dev-tools
+pipx install ansible-dev-tools
 adt --version
 ```
 
-To upgrade: `uv add --upgrade ansible-dev-tools`. To pin a version: `uv add ansible-dev-tools==26.4.6`.
+To upgrade: `pipx upgrade ansible-dev-tools`. To pin a version: `pipx install ansible-dev-tools==26.4.6`.
 
-> **Tip:** `pip` works too.
+> **Tip:** Install pipx first if you don't have it.
 >
-> Replace `uv venv` with `python3 -m venv` and `uv add` with `pip install`. Always use a virtual environment -- on macOS 14+ and newer Linux distributions, the system Python is externally managed (PEP 668) and direct installs will fail.
+> macOS: `brew install pipx`. Fedora/RHEL: `dnf install pipx`. Ubuntu/Debian: `apt install pipx`.
 
 ---
 
