@@ -15,7 +15,9 @@ graph LR
 
 The goal is to move every automation developer in your organization onto the same toolchain, with the same versions, the same linting rules, and the same testing frameworks. Dev containers and Dev Spaces are the recommended enterprise options: they require an initial investment in image management to account for different project scenarios, but once that setup is done, the environment is completely transparent to developers. See the [Maturity Path](#maturity-path) for a detailed comparison of each method.
 
-> **Example:** A network automation team of 12 engineers across three offices adopts Dev Spaces. A new engineer joins on Monday, opens a browser, navigates to the Dev Spaces URL, and clicks "Create Workspace" on the team's Git repository. Two minutes later they have a full VS Code environment with ansible-lint, molecule, ansible-navigator, and the team's linting profile, identical to every other engineer on the team. No local installs, no "which Python version do I need," no VPN issues with package mirrors.
+> **Example:** Dev Spaces onboarding.
+>
+> A network automation team of 12 engineers across three offices adopts Dev Spaces. A new engineer joins on Monday, opens a browser, navigates to the Dev Spaces URL, and clicks "Create Workspace" on the team's Git repository. Two minutes later they have a full VS Code environment with ansible-lint, molecule, ansible-navigator, and the team's linting profile, identical to every other engineer on the team. No local installs, no "which Python version do I need," no VPN issues with package mirrors.
 
 ---
 
@@ -35,8 +37,6 @@ The goal is to move every automation developer in your organization onto the sam
     - [Method B: RPM (Red Hat Subscription)](#method-b-rpm-red-hat-subscription)
     - [Method C: Python Package (pipx)](#method-c-python-package-pipx)
     - [Method D: Red Hat OpenShift Dev Spaces](#method-d-red-hat-openshift-dev-spaces)
-    - [Verify Your Installation](#verify-your-installation)
-    - [Troubleshooting](#troubleshooting)
   - [AI-Assisted Ansible Development](#ai-assisted-ansible-development)
     - [Ansible Devtools MCP Server](#ansible-devtools-mcp-server)
     - [Connecting to Ansible Automation Platform](#connecting-to-ansible-automation-platform)
@@ -299,30 +299,6 @@ adt --version
 | **Preloaded extensions** | Ansible VS Code extension with lint, navigator, and creator integration |
 | **Git integration** | OAuth2 for GitHub/GitLab, SSH key forwarding |
 
-### Verify Your Installation
-
-Regardless of the method, verify ADT is working:
-
-```bash
-adt --version
-ansible-creator init collection testns.testcol --init-path /tmp/testcol
-cd /tmp/testcol && ansible-lint
-```
-
-Expected: `adt --version` lists all tool versions, and `ansible-lint` reports `Passed with production profile: 0 failure(s), 0 warning(s) on 5 files.`
-
-### Troubleshooting
-
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| `command not found: adt` | Not installed or not in PATH | Check installation method and re-run |
-| `pip install` fails with "externally managed" | PEP 668 on modern macOS/Linux | Use `pipx install` instead |
-| `dnf install` says package not found | AAP repo not enabled | Run `subscription-manager repos --list \| grep ansible` |
-| Dev container fails to start | Container runtime not running | Start Docker Desktop or Podman Desktop, then retry |
-| Molecule tests fail with "permission denied" | Missing container capabilities | Add `--cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE --device /dev/fuse` flags |
-| Dev Spaces workspace stuck starting | Resource limits exceeded or image pull failure | Check OpenShift events with `oc get events -n <workspace-ns>` |
-| `ansible-lint` shows different results across team | Different ADT versions | Use container-based methods for consistency |
-
 ---
 
 ## AI-Assisted Ansible Development
@@ -343,7 +319,9 @@ graph TD
     AAP --> PLATFORM["<b>AAP Instance</b><br/>Launch jobs · Query inventory<br/>Platform health · Credentials"]
 ```
 
-> **Tip:** The Ansible Devtools MCP Server is currently available as a technology preview. The AAP MCP Server is generally available.
+> **Tip:** MCP server availability.
+>
+> The Ansible Devtools MCP Server is currently available as a technology preview. The AAP MCP Server is generally available.
 
 ### Ansible Devtools MCP Server
 
@@ -456,7 +434,9 @@ graph LR
 
 This workflow is particularly valuable for teams onboarding new automation developers. A developer who is still learning Ansible conventions can ask the AI assistant to scaffold a role, explain why the linter flagged a particular rule, fix it, and then run the corrected playbook against a real environment -- building understanding of both the toolchain and the platform in context rather than in isolation.
 
-> **Example:** A developer asks the AI assistant to create a role that configures NTP on RHEL hosts. The assistant scaffolds the role with `ansible-creator`, lints it, queries the AAP development instance to confirm the RHEL inventory group exists and has the expected hosts, launches a test job, and discovers that the `chrony` package is already installed but the configuration file differs. The assistant updates the template, re-runs the job, and confirms idempotency -- all within the same conversation, without the developer opening the AAP UI once.
+> **Example:** NTP role with AI-assisted workflow.
+>
+> A developer asks the AI assistant to create a role that configures NTP on RHEL hosts. The assistant scaffolds the role with `ansible-creator`, lints it, queries the AAP development instance to confirm the RHEL inventory group exists and has the expected hosts, launches a test job, and discovers that the `chrony` package is already installed but the configuration file differs. The assistant updates the template, re-runs the job, and confirms idempotency -- all within the same conversation, without the developer opening the AAP UI once.
 
 ---
 
@@ -471,7 +451,16 @@ This workflow is particularly valuable for teams onboarding new automation devel
 
 ## Sources
 
-**Upstream (community)**
+**Red Hat product documentation**
+
+- [Ansible development tools overview (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-assembly_devtools_intro)
+- [Installing Ansible development tools (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/extend-install_ansible_development_tools_with_the_ai_assistant)
+- [Using Ansible development workspaces (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-assembly_workspaces_intro)
+- [MCP server integration (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-con_mcp_server_integration)
+- [ansible-dev-tools-rhel9 container](https://catalog.redhat.com/en/software/containers/ansible-automation-platform-27/ansible-dev-tools-rhel9/69fb1e26616f0fc2878516a6)
+- [Red Hat OpenShift Dev Spaces documentation](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/)
+
+**Community**
 
 - [Ansible Development Tools documentation](https://docs.ansible.com/projects/dev-tools/)
 - [ansible-dev-tools on GitHub](https://github.com/ansible/ansible-dev-tools)
@@ -483,19 +472,6 @@ This workflow is particularly valuable for teams onboarding new automation devel
 - [Ansible Forum (devtools)](https://forum.ansible.com/tags/devtools)
 - [Molecule documentation](https://ansible.readthedocs.io/projects/molecule/)
 - [ansible-sign documentation](https://docs.ansible.com/projects/sign/)
-
-**Downstream (Red Hat product documentation)**
-
-- [Ansible development tools overview (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-assembly_devtools_intro)
-- [Installing Ansible development tools (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/extend-install_ansible_development_tools_with_the_ai_assistant)
-- [Using Ansible development workspaces (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-assembly_workspaces_intro)
-- [MCP server integration (AAP 2.7)](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/develop-con_mcp_server_integration)
-- [ansible-dev-tools-rhel9 container](https://catalog.redhat.com/en/software/containers/ansible-automation-platform-27/ansible-dev-tools-rhel9/69fb1e26616f0fc2878516a6)
-- [Red Hat OpenShift Dev Spaces documentation](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/)
-
-**Other**
-
-- [Solution Guides Best Practices](https://ansible-tmm.github.io/solution-guides/README-best-practices)
 
 ---
 
