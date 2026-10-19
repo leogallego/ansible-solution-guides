@@ -9,7 +9,7 @@ permalink: /updates/
 </div>
 
 <!-- BEGIN:AUTO-UPDATES -->
-*Rolling window: 2026-09-12 to 2026-10-12. Regenerated weekly from git history.*
+*Rolling window: 2026-09-19 to 2026-10-19. Regenerated weekly from git history.*
 
 ### New guides
 
@@ -24,10 +24,7 @@ permalink: /updates/
 - [AIOps with Splunk and Event-Driven Ansible]({{ "/README-AIOps-Splunk-ITSI" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [AIOps Ticket Enrichment]({{ "/README-AIOps-Ticket-Enrichment" | relative_url }}): Tighten UC01 opening: drop meta callout, lead with Overview.
 - [Incident and Ticket Enrichment]({{ "/README-AIOps-Use-Case-01-Incident-Ticket-Enrichment" | relative_url }}): Replace UC01 stage locator callouts with a scannable table.
-- [Cost and Resource Optimization: From EDA to Orchestrated Automation]({{ "/README-AIOps-Use-Case-02-Cost-Resource-Optimization" | relative_url }}): Normalize product name to Automation orchestrator across AIOps docs.
-- [Intelligent Capacity Orchestration: From EDA to Orchestrated Automation]({{ "/README-AIOps-Use-Case-03-Intelligent-Capacity-Orchestration" | relative_url }}): Normalize product name to Automation orchestrator across AIOps docs.
 - [Curated Automation Remediation: From EDA to Orchestrated Automation]({{ "/README-AIOps-Use-Case-04-Curated-Automation-Remediation" | relative_url }}): Position foundational AIOps workflow as the high-level UC04 walkthrough.
-- [System-Level Drift and Policy Enforcement: From EDA to Orchestrated Automation]({{ "/README-AIOps-Use-Case-05-System-Drift-Policy-Enforcement" | relative_url }}): Normalize product name to Automation orchestrator across AIOps docs.
 - [Self-healing infrastructure: From EDA to Orchestrated Automation]({{ "/README-AIOps-Use-Case-06-Self-Healing-Infrastructure" | relative_url }}): Drop defensive workshop-appendix fencing from AIOps and UC06.
 - [Windows Certificate Rotation with AI Risk Analysis]({{ "/README-AIOps-Windows-Cert-Rotation" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [AIOps automation with Ansible]({{ "/README-AIOps" | relative_url }}): Clarify 'select from library' with concrete examples
@@ -39,7 +36,6 @@ permalink: /updates/
 - [Event-Driven Network Source of Truth with NetBox and Ansible Automation Platform]({{ "/README-NetBox-SoT-EDA-Config" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [Event-Driven WAN Circuit Failover with NetBox and Ansible Automation Platform]({{ "/README-NetBox-WAN-EDA-Failover" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [Using Event-Driven Ansible to Consume OpenShift API Resources With Kafka]({{ "/README-OpenShift-EDA-Kafka" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
-- [RHEL Patching with Red Hat Lightspeed and Ansible MCP Server]({{ "/README-Patching-RHEL" | relative_url }}): Clarify Red Hat Lightspeed curated remediations vs AI authoring.
 - [AIOps with AWS SQS and Event-Driven Ansible]({{ "/README-SQS" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [ServiceNow ITSM Ticket Enrichment Automation]({{ "/README-ServiceNow-ITSM" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
 - [Zero Trust Architecture with Ansible Automation Platform]({{ "/README-ZTA" | relative_url }}): Standardize section order: Summary before Related Guides across all guides
@@ -62,7 +58,7 @@ permalink: /updates/
 - Add Gluware card to catalog with network + WIP tags and partner filter
 - Add WIP Gluware network automation solution guide
 
-_…and 14 more site commits in this window._
+_…and 9 more site commits in this window._
 
 <!-- END:AUTO-UPDATES -->
 
