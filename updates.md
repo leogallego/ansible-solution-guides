@@ -9,7 +9,7 @@ permalink: /updates/
 </div>
 
 <!-- BEGIN:AUTO-UPDATES -->
-*Rolling window: 2026-10-03 to 2026-11-02. Regenerated weekly from git history.*
+*Rolling window: 2026-10-10 to 2026-11-09. Regenerated weekly from git history.*
 
 ### New guides
 
@@ -17,17 +17,11 @@ _No new guides in the last 30 days._
 
 ### Guide updates
 
-- [Proactive Vulnerability Remediation with Satellite, Event-Driven Ansible, and Lightspeed On-Premises]({{ "/README-Satellite-CVE-Remediation" | relative_url }}): Address Satellite guide publish-checklist feedback
+_No notable guide updates in the last 30 days._
 
 ### Site and tooling
 
-- Address Satellite guide publish-checklist feedback
-- Cancel in-flight Pages deploys on newer pushes
-- Cross-list LogicMonitor under AIOps and Network automation
-- Add Satellite logos to WIP catalog card
-- Add LogicMonitor logos to WIP catalog card
-- Add Slack/OG social preview image for AAP Guides
-- Mark Satellite CVE guide WIP, catalog it, and add SG review
+_No site or tooling changes in the last 30 days._
 
 <!-- END:AUTO-UPDATES -->
 
