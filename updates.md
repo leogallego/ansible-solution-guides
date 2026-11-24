@@ -9,7 +9,7 @@ permalink: /updates/
 </div>
 
 <!-- BEGIN:AUTO-UPDATES -->
-*Rolling window: 2026-10-17 to 2026-11-16. Regenerated weekly from git history.*
+*Rolling window: 2026-10-25 to 2026-11-24. Regenerated weekly from git history.*
 
 ### New guides
 
